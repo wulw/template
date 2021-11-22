@@ -56,19 +56,23 @@ export default {
   .flex-wrapper {
     display: flex;
     height: calc(100% - 32px);
+    padding: 16px 4px;
     .flex-item {
       margin: 0 8px;
       flex: 1;
       background: url('../../../assets/homepage_images/border_bg.png') no-repeat;
-      background-size: 100%;
+      background-size: 100% 100%;
       display: flex;
+      justify-content: center;
+      align-items: center;
       .title {
         writing-mode: tb-rl;
         color: #D0021B;
         font-size: 18px;
-        padding: 16px 0 0 40px;
+        font-weight: bold;
       }
       .content {
+        margin-left: 8px;
         .count {
           padding-top: 16px;
           span {
@@ -90,7 +94,6 @@ export default {
     }
   }
   .footer {
-    margin: 0 8px;
     text-align: center;
     label {
       font-size: 14px;

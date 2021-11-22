@@ -39,11 +39,11 @@ export const auditStatusList = [
 export const partyTypeList = [
   {
     valueDesc: '正式党员',
-    valueId: '1'
+    valueId: 1
   },
   {
     valueDesc: '预备党员',
-    valueId: '2'
+    valueId: 2
   }
 ]
 

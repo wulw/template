@@ -10,16 +10,19 @@
           <div class="title">
             <span>党员概况</span>
           </div>
+          <party-profile />
         </div>
         <div class="middle-wrapper">
           <div class="title">
             <span>党员年龄分布</span>
           </div>
+          <party-age />
         </div>
         <div class="bottom-wrapper">
           <div class="title">
             <span>党员性别分布</span>
           </div>
+          <party-gender />
         </div>
       </div>
       <div class="flex-item-wrapper">
@@ -55,19 +58,25 @@
 </template>
 
 <script>
+import PartyProfile from './components/partyProfile.vue'
 import BaiduMapWrapper from './components/baiduMapWrapper.vue'
 import PartyActivity from './components/partyActivity.vue'
+import PartyAge from './components/partyAge.vue'
 import PartyBuildInfo from './components/partyBuildInfo.vue'
+import PartyGender from './components/partyGender.vue'
 import PartyLearn from './components/partyLearn.vue'
 
 export default {
   name: 'homepage',
 
   components: {
+    PartyProfile,
     BaiduMapWrapper,
     PartyActivity,
     PartyBuildInfo,
-    PartyLearn
+    PartyLearn,
+    PartyAge,
+    PartyGender
   },
   data () {
     return {
