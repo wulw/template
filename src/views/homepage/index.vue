@@ -47,6 +47,7 @@
           <div class="title">
             <span>党建学习统计</span>
           </div>
+          <party-learn />
         </div>
       </div>
     </div>
@@ -57,6 +58,7 @@
 import BaiduMapWrapper from './components/baiduMapWrapper.vue'
 import PartyActivity from './components/partyActivity.vue'
 import PartyBuildInfo from './components/partyBuildInfo.vue'
+import PartyLearn from './components/partyLearn.vue'
 
 export default {
   name: 'homepage',
@@ -64,7 +66,8 @@ export default {
   components: {
     BaiduMapWrapper,
     PartyActivity,
-    PartyBuildInfo
+    PartyBuildInfo,
+    PartyLearn
   },
   data () {
     return {
