@@ -1,0 +1,17 @@
+$base-color: var(--baseColor);
+$base-font: var(--baseFont);
+$active-font: var(--activeFont);
+$mbg: var(--menuBg);
+$hbg: var(--hbg);
+$sbg: var(--subMenuBg);
+$bdc: var(--borderColor);
+:root {
+    //精简风格颜色#01023c //办公绿风格颜色#417505 //办公蓝风格颜色#2a75da
+    --baseColor: #2a75da;
+    --baseFont: #fff;
+    --activeFont: #000;
+    --menuBg: #fff;
+    --hbg: #2553964d;
+    --subMenuBg: #010125;
+    --boderColor: #255396;
+}
