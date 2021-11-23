@@ -15,21 +15,20 @@
           <span>
             <!-- <span>{{ data.id }}</span> -->
             <el-button
-              v-show="data.p_id === 0"
+              v-if="data.p_id !== 0"
               type="text"
               size="mini"
               @click="() => append(data)">
               新增
             </el-button>
             <el-button
-              v-show="data.p_id !== 0"
               type="text"
               size="mini"
               @click="() => modify(node, data)">
               修改
             </el-button>
             <el-button
-              v-show="data.p_id !== 0"
+              v-if="data.p_id !== 0"
               type="text"
               size="mini"
               @click="() => remove(node, data)">
@@ -68,8 +67,10 @@
         </el-form-item>
         <el-form-item>
           <el-date-picker
-            style="width: 160px"
+            style="width: 136px"
             v-model="filterForm.party_date"
+            format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd"
             type="date"
             range-separator="/"
             start-placeholder="开始日期">
@@ -85,7 +86,8 @@
       <div class="btns-wrapper">
         <el-button type="primary" size="small" @click="handleAdd">新增</el-button>
         <el-button type="danger" size="small" @click="handleDelete">删除</el-button>
-        <el-button type="primary" size="small" @click="handleImport">导入</el-button>
+        <el-button type="primary" size="small"><a :href="templateDownloadUrl">模板下载</a></el-button>
+        <el-button type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'partyMemberImport' }">导入</el-button>
         <el-button type="primary" size="small" @click="handleExport">导出</el-button>
       </div>
       <!-- 列表 -->
@@ -97,14 +99,14 @@
         <el-table-column type="selection" width="50"></el-table-column>
         <el-table-column type="index" width="50" label="序号" align="center"></el-table-column>
         <el-table-column label="姓名" prop="user_name" align="center"></el-table-column>
-        <el-table-column label="身份证号" prop="id_card" align="center"></el-table-column>
+        <el-table-column label="身份证号" prop="id_card" align="center" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column label="党员类型" prop="type" align="center">
           <template slot-scope="scope">
             <span>{{ partyTypeList.find(item => item.valueId === scope.row.type).valueDesc }}</span>
           </template>
         </el-table-column>
         <el-table-column label="入党时间" prop="party_date" align="center"></el-table-column>
-        <el-table-column label="所属党组织" prop="joinPartyTime" align="center"></el-table-column>
+        <el-table-column label="所属党组织" prop="party_name" align="center" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column label="职位" prop="position" align="center"></el-table-column>
         <el-table-column label="手机号" prop="phone" align="center"></el-table-column>
         <el-table-column label="操作" width="160" align="center">
@@ -129,13 +131,14 @@
     </div>
     <el-dialog
       custom-class="dialog-wrapper"
-      :width="dialogTag === 'partyOrg' ? '30%' : '50%'"
+      :width="['partyOrg', 'partyMemberImport'].includes(dialogTag) ? '30%' : '50%'"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :visible.sync="dialogVisible"
     >
-      <party-org-add v-if="dialogVisible && dialogTag === 'partyOrg'" @closeDialog="dialogVisible = false" :partyOrgItem="partyOrgItem" />
-      <party-member-add v-if="dialogVisible && dialogTag === 'partyMember'" @closeDialog="dialogVisible = false" :partyMemberItem="partyMemberItem" />
+      <party-org-add v-if="dialogVisible && dialogTag === 'partyOrg'" @closeDialog="dialogVisible = false" :partyOrgItem="partyOrgItem" :partyOrgParams="partyOrgParams" @notifyRefresh="getTreeList" />
+      <party-member-add v-if="dialogVisible && dialogTag === 'partyMember'" @closeDialog="dialogVisible = false" :partyMemberItem="partyMemberItem" :partyMemberParams="partyMemberParams" @notify="getPartyMemberList" />
+      <party-member-import v-if="dialogVisible && dialogTag === 'partyMemberImport'" @closeDialog="dialogVisible = false" @notify="getPartyMemberList" />
     </el-dialog>
   </div>
 </template>
@@ -144,7 +147,9 @@
 import { informationTypeList, auditStatusList, partyTypeList } from '@/libs/term-mapping'
 import PartyOrgAdd from './components/partyOrgAdd.vue'
 import PartyMemberAdd from './components/partyMemberAdd.vue'
-import { getTreeList, partyOrgDel, getPartyMemberList, partyMemberDel, partyMemberAdd } from '@/api/org'
+import partyMemberImport from './components/partyMemberImport.vue'
+import { getTreeList, partyOrgDel, getPartyMemberList, partyMemberDel, exportPartyMemberData } from '@/api/org'
+import Cookies from 'js-cookie'
 
 // 页数
 const pagination = {
@@ -158,7 +163,8 @@ export default {
 
   components: {
     PartyOrgAdd,
-    PartyMemberAdd
+    PartyMemberAdd,
+    partyMemberImport
   },
   data () {
     return {
@@ -174,7 +180,7 @@ export default {
         user_name: '',
         id_card: '',
         type: '',
-        party_date: '',
+        party_date: '', // new Date(),
         position: ''
       },
       pagination,
@@ -184,8 +190,30 @@ export default {
       dialogVisible: false,
       dialogTag: 'partyOrg',
       partyOrgItem: {},
+      partyOrgParams: {
+        type: 'add', // 默认add modify修改
+        p_id: 0  // 当前节点p_id
+      },
       partyMemberItem: {},
-      multipleSelection: []
+      partyMemberParams: {
+        type: 'add', // 默认add edit编辑
+        party_id: ''
+      },
+      multipleSelection: [],
+      importDialogVisible: false
+    }
+  },
+  computed: {
+    userInfo() {
+      return JSON.parse(Cookies.get('user') || null)
+    },
+    // 模板下载地址
+    templateDownloadUrl() {
+      if (process.env.NODE_ENV === 'development') {
+        return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoTemplate`
+      } else {
+        return '/PartyBuildingApi/partyOrganizationInfoTemplate'
+      }
     }
   },
   methods: {
@@ -198,10 +226,17 @@ export default {
       this.queryLoading = true
       this.getPartyMemberList()
     },
+    // 新增
     handleAdd () {
       this.dialogTag = 'partyMember'
       this.dialogVisible = true
+      this.partyMemberItem = null
+      this.partyMemberParams = {
+        type: 'add',
+        party_id: this.partyOrgItem.id
+      }
     },
+    // 批量删除
     handleDelete () {
       if (this.multipleSelection.length === 0) {
         return this.$message.info('请先选择')
@@ -210,14 +245,14 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(async () => {
+      }).then(() => {
         partyMemberDel({
           id: this.multipleSelection.map(item => item.id).join(',')
         }).then(res => {
           if (res && res.data) {
             this.$message.success('删除成功')
             // 判断删除时 该条数据是不是当前页最后一条
-            if (this.pagination.pageSize * (this.pagination.page - 1) + 1 === this.pagination.total) {
+            if (this.pagination.pageSize * (this.pagination.page - this.multipleSelection.length) + 1 === this.pagination.total) {
               this.pagination.page--
             }
             this.getPartyMemberList()
@@ -227,20 +262,38 @@ export default {
 
       })
     },
-    handleImport () {},
-    handleExport () {},
+    // 导出
+    handleExport () {
+      if (this.multipleSelection.length) {
+        exportPartyMemberData({
+          id: this.multipleSelection.map(item => item.id).join(',')
+        }).then(res => {
+          if (res && res.code === 200) {
+            this.$message.success('导出数据成功')
+          }
+        })
+      } else {
+        this.$message.info('请先选择需要导出数据')
+      }
+    },
     sizeChange (pageSize) {
       this.pagination.pageSize = pageSize
       this.pagination.page = 1
+      this.getPartyMemberList()
     },
     currentChange (currentPage) {
       this.pagination.page = currentPage
+      this.getPartyMemberList()
     },
     // 新增
     append (data) {
       this.dialogTag = 'partyOrg'
       this.dialogVisible = true
       console.log(data)
+      this.partyOrgParams = {
+        type: 'add',
+        p_id: data.p_id
+      }
     },
     // 修改
     modify (node, data) {
@@ -248,12 +301,24 @@ export default {
       this.dialogVisible = true
       console.log(node, data)
       this.partyOrgItem = data
+      this.partyOrgParams.type = 'modify'
     },
     // 删除
     remove (node, data) {
-      console.log(node, data)
-      partyOrgDel(data).then(res => {
-        console.log(res)
+      // console.log(node, data)
+      this.$confirm('是否删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        partyOrgDel(data).then(res => {
+          if (res && res.code === 200) {
+            this.$message.success('删除成功')
+            this.getTreeList()
+          }
+        })
+      }).catch(() => {
+
       })
     },
     handleNodeClick (data, node, item) {
@@ -263,8 +328,8 @@ export default {
     // 党组织树形列表
     getTreeList () {
       let params = {
-        school_id: '', // ?
-        campus_id: '' // ?
+        school_id: this.userInfo.school_id, // ?
+        campus_id: this.userInfo.campus_id // ?
       }
       getTreeList(params).then(res => {
         console.log(res)
@@ -276,9 +341,11 @@ export default {
     },
     // 党组织成员列表
     getPartyMemberList() {
+      this.tableLoading = true
       getPartyMemberList({ ...this.filterForm, ...this.pagination, ...{party_id: '2'} }).then(res => {
         console.log(res)
         this.queryLoading = false
+        this.tableLoading = false
         if (res && res.data) {
           this.tableData = res.data.data
           this.pagination.total = res.data.total
@@ -290,6 +357,10 @@ export default {
       this.dialogTag = 'partyMember'
       this.dialogVisible = true
       this.partyMemberItem = row
+      this.partyMemberParams = {
+        type: 'edit',
+        party_id: ''
+      } 
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
@@ -360,6 +431,9 @@ export default {
     }
   }
   ::v-deep.dialog-wrapper {
+    .el-dialog__header {
+      display: none;
+    }
     .el-dialog__body {
       padding: 16px;
     }

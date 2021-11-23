@@ -3,7 +3,7 @@
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
-        <el-input v-model="filterForm.keywords" placeholder="文章标题/发布人"></el-input>
+        <el-input v-model="filterForm.name" placeholder="文章标题/发布人"></el-input>
       </el-form-item>
       <el-form-item>
         <el-select v-model="filterForm.type" placeholder="请选择资讯类型">
@@ -13,15 +13,15 @@
       <el-form-item>
         <el-date-picker
           style="width: 240px"
-          v-model="filterForm.dateRange"
-          type="daterange"
-          range-separator="/"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期">
+          v-model="filterForm.release_time"
+          type="date"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
+          placeholder="发布时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="filterForm.auditStatus" placeholder="请选择审核状态">
+        <el-select v-model="filterForm.status" placeholder="请选择审核状态">
           <el-option v-for="item in auditStatusList" :key="item.valueId" :label="item.valueDesc" :value="item.valueId"></el-option>
         </el-select>
       </el-form-item>
@@ -38,18 +38,18 @@
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column label="标题" prop="title" width="240" align="center" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="资讯类型" prop="informationType" align="center">
+      <el-table-column label="资讯类型" prop="type" align="center">
         <template slot-scope="scope">
-          <span>{{ informationTypeList.find(item => item.valueId === scope.row.informationType).valueDesc }}</span>
+          <span>{{ informationTypeList.find(item => item.valueId === scope.row.type).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布人" prop="publisher" align="center"></el-table-column>
       <el-table-column label="来源" prop="source" align="center"></el-table-column>
-      <el-table-column label="发布时间" prop="publishTime" align="center"></el-table-column>
+      <el-table-column label="发布时间" prop="release_time" align="center"></el-table-column>
       <el-table-column label="单位" prop="unit" align="center" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="审核状态" prop="auditStatus" align="center">
         <template slot-scope="scope">
-          <span>{{ auditStatusList.find(item => item.valueId === scope.row.auditStatus).valueDesc }}</span>
+          <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
@@ -63,7 +63,7 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="pagination.currentPage"
+      :current-page.sync="pagination.page"
       :page-sizes="[10, 20, 50, 100]"
       :page-size="pagination.pageSize"
       layout="total, prev, pager, next, sizes"
@@ -77,10 +77,11 @@
 
 <script>
 import { informationTypeList, auditStatusList } from '@/libs/term-mapping'
+import { getPolicyInfoList } from '@/api/policyInfo'
 
 // 页数
 const pagination = {
-  currentPage: 1,
+  page: 1,
   pageSize: 10,
   total: 0
 }
@@ -94,40 +95,12 @@ export default {
       informationTypeList,
       auditStatusList,
       filterForm: {
-        keywords: '',
+        name: '',
         type: '',
-        dateRange: [],
-        auditStatus: ''
+        release_time: '',
+        status: ''
       },
-      tableData: [
-        {
-          title: '习近平给“国际青年领袖对话”项目外籍青年代表回信',
-          informationType: '2',
-          publisher: '李老师',
-          source: '新华网',
-          publishTime: '2021-08-12',
-          unit: '安徽省（省教育厅）',
-          auditStatus: '1'
-        },
-        {
-          title: '习近平给“国际青年领袖对话”项目外籍青年代表回信',
-          informationType: '2',
-          publisher: '李老师',
-          source: '新华网',
-          publishTime: '2021-08-12',
-          unit: '安徽省（省教育厅）',
-          auditStatus: '1'
-        },
-        {
-          title: '习近平给“国际青年领袖对话”项目外籍青年代表回信',
-          informationType: '2',
-          publisher: '李老师',
-          source: '新华网',
-          publishTime: '2021-08-12',
-          unit: '安徽省（省教育厅）',
-          auditStatus: '1'
-        }
-      ],
+      tableData: [],
       loading: false
     }
   },
@@ -135,15 +108,27 @@ export default {
 
   },
   created() {
-
+    this.getPolicyInfoList()
   },
   methods: {
+    getPolicyInfoList () {
+      getPolicyInfoList({ ...this.filterForm, ...this.pagination}).then(res => {
+        if (res && res.code === 200) {
+          if (res.data) {
+            this.tableData = res.data.data || []
+            this.pagination.total = res.data.total
+          }
+        }
+      })
+    },
     sizeChange (pageSize) {
       this.pagination.pageSize = pageSize
       this.pagination.currentPage = 1
+      this.getPolicyInfoList()
     },
     currentChange (currentPage) {
-      this.pagination.currentPage = currentPage
+      this.pagination.page = currentPage
+      this.getPolicyInfoList()
     }
   }
 }

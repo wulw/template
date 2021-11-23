@@ -26,7 +26,7 @@ export function partyOrgAdd(params) {
 // 党组织删除
 export function partyOrgDel(params) {
   return request({
-    url: '/PartyBuildingApi/PartyOrganization/9',
+    url: `/PartyBuildingApi/PartyOrganization/${params.id}`,
     method: 'delete',
     params
   })
@@ -35,7 +35,7 @@ export function partyOrgDel(params) {
 // 党组织修改
 export function partyOrgModify(params) {
   return request({
-    url: '/PartyBuildingApi/PartyOrganization/9',
+    url: `/PartyBuildingApi/PartyOrganization/${params.id}`,
     method: 'put',
     params
   })
@@ -59,11 +59,57 @@ export function partyMemberAdd(params) {
   })
 }
 
+// 党组织成员修改
+export function partyMemberModify(params) {
+  return request({
+    url: `/PartyBuildingApi/PartyOrganizationInfo/${params.id}`,
+    method: 'put',
+    params
+  })
+}
+
 // 党组织成员批量删除
 export function partyMemberDel(params) {
   return request({
     url: '/PartyBuildingApi/PartyOrganizationInfo',
     method: 'delete',
+    params
+  })
+}
+
+// 导入模板下载
+export function partyMemberTemplate(params) {
+  return request({
+    url: `/PartyBuildingApi/partyOrganizationInfoTemplate`,
+    method: 'get',
+    params
+  })
+}
+
+// 导入数据
+export function importPartyMemberData(params) {
+  return request({
+    url: `/PartyBuildingApi/partyOrganizationInfoImport`,
+    method: 'post',
+    params
+  })
+}
+
+
+// 导出数据
+export function exportPartyMemberData(params) {
+  return request({
+    url: `/PartyBuildingApi/partyOrganizationInfoExport/${params.id}`,
+    method: 'get',
+    params
+  })
+}
+
+// 搜索教师下拉列表
+export function searchTeacherList(params) {
+  return request({
+    url: '/BasicsApi/Teacher',
+    method: 'get',
     params
   })
 }

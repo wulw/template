@@ -14,8 +14,17 @@
         <el-form-item label="联系方式：" prop="tel">
           <el-input v-model="addForm.tel" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="党组织地址：" prop="xiang">
-          <el-input v-model="addForm.xiang" placeholder="请输入内容"></el-input>
+        <el-form-item label="党组织地址：" prop="sheng">
+          <el-input v-model="addForm.sheng" placeholder="省"></el-input>
+        </el-form-item>
+        <el-form-item prop="shi">
+          <el-input v-model="addForm.shi" placeholder="市"></el-input>
+        </el-form-item>
+        <el-form-item prop="xian">
+          <el-input v-model="addForm.xian" placeholder="区/县"></el-input>
+        </el-form-item>
+        <el-form-item prop="xiang">
+          <el-input v-model="addForm.xiang" placeholder="详细地址"></el-input>
         </el-form-item>
       </el-form>
     </div>
@@ -27,7 +36,8 @@
 </template>
 
 <script>
-import { partyOrgAdd } from '@/api/org'
+import { partyOrgAdd, partyOrgModify } from '@/api/org'
+import Cookies from 'js-cookie'
 
 export default {
   name: 'partyOrgAdd',
@@ -35,6 +45,15 @@ export default {
   props: {
     partyOrgItem: {
       type: Object
+    },
+    partyOrgParams: {
+      type: Object,
+      default: () => {
+        return { 
+          type: 'add',
+          p_id: 0
+        }
+      }
     }
   },
   data () {
@@ -42,7 +61,6 @@ export default {
       addForm: {
         party_name: '',
         secretary_name: '',
-        secretary_id: 50,
         tel: '',
         xiang: ''
       },
@@ -56,11 +74,25 @@ export default {
         tel: [
           { required: true, message: '联系方式必填', trigger: 'blur' }
         ],
+        sheng: [
+          { required: true, message: '省必填', trigger: 'blur' }
+        ],
+        shi: [
+          { required: true, message: '市必填', trigger: 'blur' }
+        ],
+        xian: [
+          { required: true, message: '区/县必填', trigger: 'blur' }
+        ],
         xiang: [
-          { required: true, message: '党组织地址必填', trigger: 'blur' }
+          { required: true, message: '详细地址必填', trigger: 'blur' }
         ]
       },
       submitLoading: false
+    }
+  },
+  computed: {
+    userInfo() {
+      return JSON.parse(Cookies.get('user') || null)
     }
   },
   methods: {
@@ -69,12 +101,34 @@ export default {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
           this.submitLoading = true
-          partyOrgAdd(this.addForm).then(res => {
-            if (res && res.data) {
-              this.submitLoading = false
-              this.cancel()
+          // 新增
+          if (this.partyOrgParams.type === 'add') {
+            let params = {
+              school_id: this.userInfo.school_id,
+              campus_id: this.userInfo.campus_id,
+              p_id: this.partyOrgParams.p_id
             }
-          })
+            partyOrgAdd({ ...this.addForm, ...params }).then(res => {
+              this.submitLoading = false
+              if (res && res.code === 200) {
+                this.$message.success('新增成功')
+                this.cancel()
+                this.$emit('notifyRefresh')
+              } else {
+
+              }
+            })
+          } else {  // 修改
+            partyOrgModify(this.addForm).then(res => {
+              this.submitLoading = false
+              if (res && res.code === 200) {
+                this.$message.success('修改成功')
+                this.cancel()
+              } else {
+
+              }
+            })
+          }
         } else {
           console.log('submit error')
         }
@@ -86,7 +140,10 @@ export default {
     }
   },
   created() {
-    this.addForm = this.partyOrgItem
+    if (this.partyOrgParams.type === 'modify') {
+      this.addForm = { ...this.partyOrgItem }
+    }
+    console.log(this.userInfo)
   }
 }
 </script>

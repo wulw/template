@@ -3,19 +3,19 @@
 export const informationTypeList = [
   {
     valueDesc: '党建要闻',
-    valueId: '1'
+    valueId: 1
   },
   {
     valueDesc: '领导讲话',
-    valueId: '2'
+    valueId: 2
   },
   {
     valueDesc: '政策文件',
-    valueId: '3'
+    valueId: 3
   },
   {
     valueDesc: '党务知识',
-    valueId: '4'
+    valueId: 4
   }
 ]
 
@@ -23,15 +23,15 @@ export const informationTypeList = [
 export const auditStatusList = [
   {
     valueDesc: '已通过',
-    valueId: '1'
+    valueId: 1
   },
   {
     valueDesc: '未通过',
-    valueId: '2'
+    valueId: 0
   },
   {
     valueDesc: '未审核',
-    valueId: '3'
+    valueId: -1
   }
 ]
 
