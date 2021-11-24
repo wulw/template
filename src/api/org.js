@@ -1,7 +1,7 @@
 /**
  * @Date: 2021-11-22 22:17:05 
  * @Author: w_lw
- * @Description: 
+ * @Description: 党组织管理
  */
 import request from '@/utils/request'
 
@@ -87,23 +87,25 @@ export function partyMemberTemplate(params) {
 }
 
 // 导入数据
-export function importPartyMemberData(params) {
+export function importPartyMemberData(data) {
   return request({
     url: `/PartyBuildingApi/partyOrganizationInfoImport`,
     method: 'post',
-    params
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
-
 
 // 导出数据
-export function exportPartyMemberData(params) {
-  return request({
-    url: `/PartyBuildingApi/partyOrganizationInfoExport/${params.id}`,
-    method: 'get',
-    params
-  })
-}
+// export function exportPartyMemberData(params) {
+//   return request({
+//     url: `/PartyBuildingApi/partyOrganizationInfoExport/${params.party_id}`,
+//     method: 'get',
+//     params
+//   })
+// }
 
 // 搜索教师下拉列表
 export function searchTeacherList(params) {

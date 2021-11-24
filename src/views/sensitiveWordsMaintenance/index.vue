@@ -6,7 +6,7 @@
       closable
       :disable-transitions="false"
       @close="handleClose(tag, index)">
-      {{tag}}
+      {{tag.content}}
     </el-tag>
     <el-input
       v-if="inputVisible"
@@ -23,19 +23,44 @@
 </template>
 
 <script>
+import { querySensitiveWordsList, sensitiveWordsAdd, sensitiveWordsDel } from '@/api/words'
+
 export default {
   name: 'sensitiveWordsMaintenance',
 
   data () {
     return {
-      dynamicTags: ['标签一', '标签二', '标签三'],
+      dynamicTags: [],
       inputVisible: false,
       inputValue: ''
     }
   },
   methods: {
+    getSensitiveWordsList () {
+      querySensitiveWordsList().then(res => {
+        if (res && res.code === 200) {
+          this.dynamicTags = res.data || []
+        }
+      })
+    },
     handleClose (tag, index) {
-      this.dynamicTags.splice(index, 1)
+      this.$confirm('确认要删除数据？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        sensitiveWordsDel({
+          id: tag.id
+        }).then(res => {
+          if (res && res.code === 200) {
+            this.$message.success(res.msg)
+            // this.getSensitiveWordsList()
+            this.dynamicTags.splice(index, 1)
+          }
+        })
+      }).catch(() => {
+
+      })
     },
     showInput() {
       this.inputVisible = true
@@ -45,12 +70,24 @@ export default {
     },
     handleInputConfirm() {
       let inputValue = this.inputValue
-      if (inputValue) {
-        this.dynamicTags.push(inputValue)
-      }
-      this.inputVisible = false
-      this.inputValue = ''
+      // if (inputValue) {
+      //   this.dynamicTags.push({
+      //     content: inputValue
+      //   })
+      // }
+      sensitiveWordsAdd({
+        content: inputValue
+      }).then(res => {
+        if (res && res.code === 200) {
+          this.$message.success(res.msg)
+          this.inputVisible = false
+          // this.inputValue = ''
+        }
+      })
     }
+  },
+  created() {
+    this.getSensitiveWordsList()
   }
 }
 </script>

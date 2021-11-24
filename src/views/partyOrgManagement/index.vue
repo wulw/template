@@ -87,8 +87,9 @@
         <el-button type="primary" size="small" @click="handleAdd">新增</el-button>
         <el-button type="danger" size="small" @click="handleDelete">删除</el-button>
         <el-button type="primary" size="small"><a :href="templateDownloadUrl">模板下载</a></el-button>
-        <el-button type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'partyMemberImport' }">导入</el-button>
-        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+        <!-- <el-button type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'partyMemberImport' }">导入</el-button> -->
+        <party-member-import @notify="getPartyMemberList" />
+        <el-button type="primary" size="small"><a :href="exportDataUrl">导出</a></el-button>
       </div>
       <!-- 列表 -->
       <el-table
@@ -138,7 +139,7 @@
     >
       <party-org-add v-if="dialogVisible && dialogTag === 'partyOrg'" @closeDialog="dialogVisible = false" :partyOrgItem="partyOrgItem" :partyOrgParams="partyOrgParams" @notifyRefresh="getTreeList" />
       <party-member-add v-if="dialogVisible && dialogTag === 'partyMember'" @closeDialog="dialogVisible = false" :partyMemberItem="partyMemberItem" :partyMemberParams="partyMemberParams" @notify="getPartyMemberList" />
-      <party-member-import v-if="dialogVisible && dialogTag === 'partyMemberImport'" @closeDialog="dialogVisible = false" @notify="getPartyMemberList" />
+      <!-- <party-member-import v-if="dialogVisible && dialogTag === 'partyMemberImport'" @closeDialog="dialogVisible = false" @notify="getPartyMemberList" /> -->
     </el-dialog>
   </div>
 </template>
@@ -214,6 +215,14 @@ export default {
       } else {
         return '/PartyBuildingApi/partyOrganizationInfoTemplate'
       }
+    },
+    // 导出url
+    exportDataUrl() {
+      if (process.env.NODE_ENV === 'development') {
+        return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoExport/${this.partyOrgItem.party_id}`
+      } else {
+        return `/PartyBuildingApi/partyOrganizationInfoExport/${this.partyOrgItem.party_id}`
+      }
     }
   },
   methods: {
@@ -239,9 +248,9 @@ export default {
     // 批量删除
     handleDelete () {
       if (this.multipleSelection.length === 0) {
-        return this.$message.info('请先选择')
+        return this.$message.warning('请选择需要删除的数据')
       }
-      this.$confirm('是否删除所选？', '提示', {
+      this.$confirm('确认要删除数据？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -324,6 +333,7 @@ export default {
     handleNodeClick (data, node, item) {
       // console.log(data, node, item)
       this.partyOrgItem = data
+      this.getPartyMemberList()
     },
     // 党组织树形列表
     getTreeList () {
@@ -342,7 +352,10 @@ export default {
     // 党组织成员列表
     getPartyMemberList() {
       this.tableLoading = true
-      getPartyMemberList({ ...this.filterForm, ...this.pagination, ...{party_id: '2'} }).then(res => {
+      let params = {
+        party_id: this.partyOrgItem.id  // 党组织id
+      }
+      getPartyMemberList({ ...this.filterForm, ...this.pagination, ...params }).then(res => {
         console.log(res)
         this.queryLoading = false
         this.tableLoading = false

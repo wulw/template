@@ -1,11 +1,9 @@
 <template>
   <div class="party-member-import-wrapper">
-    <div class="title">
-      <strong>导入</strong>
-    </div>
     <el-upload
       class="upload-demo"
-      action=""
+      :action="uploadUrl"
+      :headers="headers"
       :before-upload="beforeUpload"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
@@ -13,20 +11,18 @@
       multiple
       :limit="10"
       :on-exceed="handleExceed"
-      :show-file-list="true"
-      :file-list="fileList">
-      <el-button size="small" type="primary">点击上传</el-button>
+      :show-file-list="false"
+      :file-list="fileList"
+      :on-success="onSuccess">
+      <el-button size="small" type="primary">导入</el-button>
       <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
     </el-upload>
-    <div class="form-footer">
-      <el-button type="primary" size="small" @click="submit">确 定</el-button>
-      <el-button type="default" size="small" @click="cancel">取 消</el-button>
-    </div>
   </div>
 </template>
 
 <script>
 import { importPartyMemberData } from '@/api/org'
+import Cookies from 'js-cookie'
 
 export default {
   name: 'partyMemberImport',
@@ -34,6 +30,20 @@ export default {
   data () {
     return {
       fileList: []
+    }
+  },
+  computed: {
+    uploadUrl() {
+      if (process.env.NODE_ENV === 'development') {
+        return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoImport`
+      } else {
+        return `/PartyBuildingApi/partyOrganizationInfoImport`
+      }
+    },
+    headers() {
+      return {
+        token: Cookies.get('token')
+      }
     }
   },
   methods: {
@@ -80,18 +90,18 @@ export default {
             return false
           }
           // 校验同名文件
-          if (this.fileList.length > 0) {
-            for (let i = 0; i < this.fileList.length; i++) {
-              if (this.fileList[i].name === file.name) {
-                this.$message({
-                  type: 'error',
-                  message: `${file.name}文件已存在`,
-                  offset: 20 + 40 * i
-                })
-                return false
-              }
-            }
-          }
+          // if (this.fileList.length > 0) {
+          //   for (let i = 0; i < this.fileList.length; i++) {
+          //     if (this.fileList[i].name === file.name) {
+          //       this.$message({
+          //         type: 'error',
+          //         message: `${file.name}文件已存在`,
+          //         offset: 20 + 40 * i
+          //       })
+          //       return false
+          //     }
+          //   }
+          // }
         } else {
           this.$message.closeAll()
           this.$message({
@@ -108,7 +118,7 @@ export default {
       //     message: '文件格式不正确'
       //   })
       // }
-      return false;
+      // return false;
     },
     handleRemove(file, fileList) {
       if (file.status === 'success') {
@@ -123,6 +133,14 @@ export default {
     handlePreview() {},
     handleExceed(file, fileList) {
       this.$message.info('文件个数限制为10个以内')
+    },
+    // 文件上传成功
+    onSuccess(response, file, fileList) {
+      console.log(response, file, fileList)
+      if (response && response.code === '200') {
+        this.$message.error(response.msg)
+        this.$emit('notify')
+      }
     }
   }
 }
@@ -130,11 +148,7 @@ export default {
 
 <style lang="scss" scoped>
 .party-member-import-wrapper {
-  .title {
-    padding: 0 0 16px;
-  }
-  .form-footer {
-    text-align: center;
-  }
+  display: inline-block;
+  margin: 0 12px;
 }
 </style>

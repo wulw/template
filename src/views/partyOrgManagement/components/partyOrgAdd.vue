@@ -152,6 +152,8 @@ export default {
 .party-org-add {
   .title {
     padding: 0 0 16px;
+    border-bottom: 1px solid #c9c9c9;
+    margin-bottom: 20px;
   }
   .form-footer {
     text-align: center;

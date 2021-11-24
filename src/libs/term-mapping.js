@@ -51,26 +51,39 @@ export const partyTypeList = [
 export const activityTypeList = [
   {
     valueDesc: '三会一课',
-    valueId: '1'
+    valueId: 1
   },
   {
     valueDesc: '主题党课活动',
-    valueId: '2'
+    valueId: 2
   },
   {
     valueDesc: '中心组学习会',
-    valueId: '3'
+    valueId: 3
   },
   {
     valueDesc: '组织生活会',
-    valueId: '4'
+    valueId: 4
   },
   {
     valueDesc: '民主生活会',
-    valueId: '5'
+    valueId: 5
   },
   {
     valueDesc: '谈话谈心',
-    valueId: '6'
+    valueId: 6
   }
 ]
+
+// 文章类型
+export const articleTypeList = [
+  {
+    valueDesc: '图文',
+    valueId: 1
+  },
+  {
+    valueDesc: '视频',
+    valueId: 2
+  }
+]
+
