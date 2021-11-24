@@ -3,14 +3,14 @@
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
-        <el-input v-model="filterForm.keywords" placeholder="项目名称"></el-input>
+        <el-input v-model="filterForm.name" placeholder="项目名称"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" @click="handleQuery" :loading="queryLoading">查询</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
-    <el-table v-loading="loading" stripe fit :data="tableData" style="width: 100%">
+    <el-table v-loading="tableLoading" stripe fit :data="tableData" style="width: 100%">
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column label="项目名称" prop="projectName" align="center"></el-table-column>
@@ -27,31 +27,13 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
-    <el-pagination
-      @size-change="sizeChange"
-      @current-change="currentChange"
-      :current-page.sync="pagination.currentPage"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="pagination.pageSize"
-      layout="total, prev, pager, next, sizes"
-      :total="pagination.total"
-      background
-      :pager-count="5"
-    >
-    </el-pagination>
   </div>
 </template>
 
 <script>
 import { activityTypeList, auditStatusList } from '@/libs/term-mapping'
-
-// 页数
-const pagination = {
-  currentPage: 1,
-  pageSize: 10,
-  total: 0
-}
+import { getOaList } from '@/api/oa'
+import Cookies from 'js-cookie'
 
 export default {
   name: 'partyActivityManagement',
@@ -61,13 +43,40 @@ export default {
       activityTypeList,
       auditStatusList,
       filterForm: {
-        keywords: '',
-        activityType: ''
+        // name: ''
       },
       tableData: [],
-      pagination,
-      loading: false
+      tableLoading: false,
+      queryLoading: false
     }
+  },
+  computed: {
+    userInfo() {
+      return JSON.parse(Cookies.get('user') || null)
+    }
+  },
+  methods: {
+     // 查询
+    handleQuery () {
+      this.queryLoading = true
+      this.getOaList()
+    },
+    getOaList () {
+      this.tableLoading = true
+      let params = {
+        user_id: this.userInfo.id
+      }
+      getOaList({ ...this.filterForm, ...params }).then(res => {
+        this.queryLoading = false
+        this.tableLoading = false
+        if (res && res.code === 200) {
+          this.tableData = res.data || []
+        } 
+      })
+    }
+  },
+  created() {
+    this.getOaList()
   }
 }
 </script>

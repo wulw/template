@@ -3,14 +3,14 @@
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
-        <el-input v-model="filterForm.keywords" placeholder="项目名称"></el-input>
+        <el-input v-model="filterForm.name" placeholder="项目名称"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" @click="handleQuery" :loading="queryLoading">查询</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
-    <el-table v-loading="loading" stripe fit :data="tableData" style="width: 100%">
+    <el-table v-loading="tableLoading" stripe fit :data="tableData" style="width: 100%">
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column label="项目名称" prop="projectName" align="center"></el-table-column>
@@ -41,7 +41,7 @@
 
 <script>
 import { activityTypeList, auditStatusList } from '@/libs/term-mapping'
-
+import { getRdList } from '@/api/rd'
 // 页数
 const pagination = {
   currentPage: 1,
@@ -57,13 +57,43 @@ export default {
       activityTypeList,
       auditStatusList,
       filterForm: {
-        keywords: '',
-        activityType: ''
+        name: ''
       },
       tableData: [],
       pagination,
-      loading: false
+      tableLoading: false,
+      queryLoading: false
     }
+  },
+  methods: {
+    // 查询
+    handleQuery () {
+      this.queryLoading = true
+      this.getRdList()
+    },
+    sizeChange (pageSize) {
+      this.pagination.pageSize = pageSize
+      this.pagination.page = 1
+      this.getList()
+    },
+    currentChange (currentPage) {
+      this.pagination.page = currentPage
+      this.getList()
+    },
+    getRdList () {
+      this.tableLoading = true
+      getRdList({ ...this.filterForm, ...this.pagination }).then(res => {
+        this.queryLoading = false
+        this.tableLoading = false
+        if (res && res.code === 200) {
+          this.tableData = res.data.data || []
+          this.pagination.total = res.data.total
+        } 
+      })
+    }
+  },
+  created() {
+    this.getRdList()
   }
 }
 </script>

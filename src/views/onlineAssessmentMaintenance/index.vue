@@ -3,10 +3,10 @@
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
-        <el-input v-model="filterForm.keywords" placeholder="项目名称"></el-input>
+        <el-input v-model="filterForm.name" placeholder="项目名称"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" @click="handleQuery" :loading="queryLoading">查询</el-button>
       </el-form-item>
       <el-form-item style="float: right; margin-right: 0">
         <el-button type="primary">新增</el-button>
@@ -14,7 +14,7 @@
       </el-form-item>
     </el-form>
     <!-- 列表 -->
-    <el-table v-loading="loading" stripe fit :data="tableData" style="width: 100%">
+    <el-table v-loading="tableLoading" stripe fit :data="tableData" style="width: 100%">
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column label="项目名称" prop="projectName" align="center"></el-table-column>
@@ -36,7 +36,7 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="pagination.currentPage"
+      :current-page.sync="pagination.page"
       :page-sizes="[10, 20, 50, 100]"
       :page-size="pagination.pageSize"
       layout="total, prev, pager, next, sizes"
@@ -50,10 +50,11 @@
 
 <script>
 import { activityTypeList, auditStatusList } from '@/libs/term-mapping'
+import { getList } from '@/api/oam'
 
 // 页数
 const pagination = {
-  currentPage: 1,
+  page: 1,
   pageSize: 10,
   total: 0
 }
@@ -66,13 +67,43 @@ export default {
       activityTypeList,
       auditStatusList,
       filterForm: {
-        keywords: '',
-        activityType: ''
+        name: ''
       },
       tableData: [],
       pagination,
-      loading: false
+      tableLoading: false,
+      queryLoading: false
     }
+  },
+  methods: {
+     // 查询
+    handleQuery () {
+      this.queryLoading = true
+      this.getList()
+    },
+    sizeChange (pageSize) {
+      this.pagination.pageSize = pageSize
+      this.pagination.page = 1
+      this.getList()
+    },
+    currentChange (currentPage) {
+      this.pagination.page = currentPage
+      this.getList()
+    },
+    getList () {
+      this.tableLoading = true
+      getList({ ...this.filterForm, ...this.pagination }).then(res => {
+        this.tableLoading = false
+        this.queryLoading = false
+        if (res && res.code === 200) {
+          this.tableData = res.data.data || []
+          this.pagination.total = res.data.total
+        } 
+      })
+    }
+  },
+  created() {
+    this.getList()
   }
 }
 </script>
