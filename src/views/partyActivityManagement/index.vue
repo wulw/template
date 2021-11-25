@@ -17,7 +17,7 @@
           format="yyyy-MM-dd"
           value-format="yyyy-MM-dd"
           type="date"
-          placeholder="选择时间">
+          placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -26,11 +26,11 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" :loading="queryLoading" @click="querySearch">查询</el-button>
       </el-form-item>
       <el-form-item style="float: right; margin-right: 0">
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
-        <el-button type="primary" @click="handleDelete">删除</el-button>
+        <el-button type="danger" @click="handleDelete">删除</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -42,8 +42,8 @@
       style="width: 100%"
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column type="index" width="50"></el-table-column>
-      <el-table-column label="活动名称" prop="title" align="center"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+      <el-table-column label="活动名称" prop="title" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="活动类型" prop="type" align="center">
         <template slot-scope="scope">
           <span>{{ activityTypeList.find(item => item.valueId === scope.row.type).valueDesc }}</span>
@@ -52,7 +52,7 @@
       <el-table-column label="发布人" prop="user_name" align="center"></el-table-column>
       <el-table-column label="单位" prop="user_department" align="center"></el-table-column>
       <el-table-column label="时间" prop="activity_time" align="center"></el-table-column>
-      <el-table-column label="地点" prop="place" align="center"></el-table-column>
+      <el-table-column label="地点" prop="place" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="参加人数" prop="number_people" align="center"></el-table-column>
       <el-table-column label="审核状态" prop="status" align="center">
         <template slot-scope="scope">
@@ -86,7 +86,7 @@
       :close-on-press-escape="false"
       :visible.sync="dialogVisible"
     >
-      <party-activity-add v-if="dialogVisible" :partyActivityItem="partyActivityItem" @close="dialogVisible = false" />
+      <party-activity-add v-if="dialogVisible" :partyActivityItem="partyActivityItem" @notifyRefresh="getPartyActivityList" @close="dialogVisible = false" />
     </el-dialog>
   </div>
 </template>
@@ -119,6 +119,7 @@ export default {
         release_time: '',
         status: ''
       },
+      queryLoading: false,
       tableData: [],
       tableLoading: false,
       pagination,
@@ -128,6 +129,11 @@ export default {
     }
   },
   methods: {
+    querySearch () {
+      this.queryLoading = true
+      this.pagination.page = 1
+      this.getPartyActivityList()
+    },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
@@ -150,7 +156,7 @@ export default {
             if (this.pagination.pageSize * (this.pagination.page - this.multipleSelection.length) + 1 === this.pagination.total) {
               this.pagination.page--
             }
-            this.getPartyMemberList()
+            this.getPartyActivityList()
           }
         })
       }).catch(() => {
@@ -175,10 +181,12 @@ export default {
             this.pagination.total = res.data.total
           }
           this.tableLoading = false
+          this.queryLoading = false
         })
       } catch(e) {
         console.log('党建活动管理列表查询报错', e)
         this.tableLoading = false
+        this.queryLoading = false
       } 
     },
     // 编辑

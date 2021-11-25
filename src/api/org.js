@@ -115,3 +115,12 @@ export function searchTeacherList(params) {
     params
   })
 }
+
+// 通用上传接口
+export function commonUpload(data) {
+  return request({
+    url: '/webApi/upload',
+    method: 'post',
+    data
+  })
+}

@@ -46,17 +46,15 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="标题图片：" prop="file_picture">
-            <el-upload
-              class="upload-demo"
-              action=""
-              :before-upload="beforeUpload"
-              multiple
-              :limit="1"
-              :show-file-list="false"
-              :file-list="form.file_picture">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-            </el-upload>
+            <upload-file :accept="'.jpg,.png,.jpeg,.gif'" @uploadSuccess="uploadSuccess" />
+          </el-form-item>
+        </el-col>
+        <el-col v-if="form.file_picture" :span="24">
+          <el-form-item>
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="file_picture_url"
+              fit="fill"></el-image>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -81,7 +79,8 @@ export default {
   name: 'policyInfoAdd',
 
   components: {
-    TinymceEditor
+    TinymceEditor,
+    UploadFile: () => import('@/components/UploadFile/index.vue')
   },
   props: {
     policyInfoItem: {
@@ -101,7 +100,7 @@ export default {
         source: '',
         release_time: '',
         user_department: '',
-        file_picture: [],
+        file_picture: '', // 标题图片
         text: '' // 内容
       },
       rules: {
@@ -133,30 +132,40 @@ export default {
   computed: {
     userInfo() {
       return JSON.parse(Cookies.get('user') || null)
+    },
+    file_picture_url() {
+      if (process.env.NODE_ENV === 'development') {
+        return `${process.env.VUE_APP_BASE_API}${this.form.file_picture}`
+      } else {
+        return `${this.form.file_picture}`
+      }
     }
   },
   methods: {
     submit () {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
-          let formData = new FormData()
-          for (let key in this.form) {
-            if (key === 'file_picture') {
-              formData.append(key, this.form[key][0])
-            } else {
-              formData.append(key, this.form[key])
-            }
-          }
+          this.submitLoading = true
           if (this.policyInfoItem) {
-            policyInfoModify(formData).then(res => {
+            policyInfoModify(this.form).then(res => {
               if (res && res.code === 200) {
-
+                this.submitLoading = false
+                this.$message.success(res.msg)
+                this.$emit('notifyRefresh')
+                this.cancel()
               }
             })
           } else {
+            let formData = new FormData()
+            for (let key in this.form) {
+              formData.append(key, this.form[key])
+            }
             policyInfoAdd(formData).then(res => {
               if (res && res.code === 200) {
-
+                this.submitLoading = false
+                this.$message.success(res.msg)
+                this.$emit('notifyRefresh')
+                this.cancel()
               }
             })
           }
@@ -168,10 +177,9 @@ export default {
     cancel () {
       this.$emit('close')
     },
-    beforeUpload (file) {
-      console.log(file)
-      this.form.file_picture = [...this.form.file_picture, file]
-      return false
+    uploadSuccess (params) {
+      this.form.file_picture = params.path
+      params && this.$refs.addForm.clearValidate(['file_picture'])
     }
   },
   created() {

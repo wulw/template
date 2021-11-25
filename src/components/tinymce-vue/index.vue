@@ -9,6 +9,7 @@
 <template>
   <div class="tinymce-editor">
     <editor v-model="myValue"
+      placeholder="请输入内容"
       :init="init"
       :disabled="disabled"
       @onClick="onClick">

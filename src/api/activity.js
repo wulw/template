@@ -26,7 +26,7 @@ export function partyActivityAdd(data) {
 // 修改
 export function partyActivityModify(data) {
   return request({
-    url: '/PartyBuildingApi/PartyActivities',
+    url: `/PartyBuildingApi/PartyActivities/${data.id}`,
     method: 'put',
     data
   })
@@ -41,3 +41,38 @@ export function partyActivityDel(data) {
   })
 }
 
+// 审核
+export function partyActivityAudit(data) {
+  return request({
+    url: '/PartyBuildingApi/examinePartyActivities',
+    method: 'post',
+    data
+  })
+}
+
+// 点赞/取消点赞
+export function partyActivityLike(data) {
+  return request({
+    url: '/PartyBuildingApi/partyActivitiesLike',
+    method: 'post',
+    data
+  })
+}
+
+// 查看
+export function partyActivitySee(data) {
+  return request({
+    url: '/PartyBuildingApi/partyActivitiesSee',
+    method: 'post',
+    data
+  })
+}
+
+// 转载
+export function partyActivityRepost(data) {
+  return request({
+    url: '/PartyBuildingApi/partyActivitiesReprint',
+    method: 'post',
+    data
+  })
+}

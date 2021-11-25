@@ -22,16 +22,16 @@ export const informationTypeList = [
 // 审核状态
 export const auditStatusList = [
   {
+    valueDesc: '未审核',
+    valueId: 0
+  },
+  {
     valueDesc: '已通过',
     valueId: 1
   },
   {
     valueDesc: '未通过',
-    valueId: 0
-  },
-  {
-    valueDesc: '未审核',
-    valueId: -1
+    valueId: 2
   }
 ]
 
@@ -87,3 +87,15 @@ export const articleTypeList = [
   }
 ]
 
+
+// 置顶状态
+export const topStatusList = [
+  {
+    valueDesc: '置顶',
+    valueId: 1
+  },
+  {
+    valueDesc: '取消置顶',
+    valueId: 2
+  }
+]

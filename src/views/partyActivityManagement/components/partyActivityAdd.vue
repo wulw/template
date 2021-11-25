@@ -3,7 +3,7 @@
     <div class="title">
       <strong>活动维护</strong>
     </div>
-    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small">
+    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="disabled">
       <el-row>
         <el-col :span="12">
           <el-form-item label="活动标题：" prop="title">
@@ -31,7 +31,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="活动地点：" prop="place">
-            <el-input v-model="form.place" placeholder="请输入内容" readonly></el-input>
+            <el-input v-model="form.place" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -51,17 +51,15 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="标题图片：" prop="file_picture">
-            <el-upload
-              class="upload-demo"
-              action=""
-              :before-upload="beforeUpload"
-              multiple
-              :limit="1"
-              :show-file-list="false"
-              :file-list="form.file_picture">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-            </el-upload>
+            <upload-file :accept="'.png,.jpg,.jpeg,.gif'" @uploadSuccess="uploadImgSuccess" />
+          </el-form-item>
+        </el-col>
+        <el-col v-if="form.file_picture" :span="24">
+          <el-form-item>
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="file_picture_url"
+              fit="fill"></el-image>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -71,17 +69,16 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="附件一：">
-            <el-upload
-              class="upload-demo"
-              action=""
-              :before-upload="beforeUpload"
-              multiple
-              :limit="1"
-              :show-file-list="false"
-              :file-list="form.file_picture">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-            </el-upload>
+            <upload-file :accept="'.txt'" @uploadSuccess="uploadTextSuccess" />
+          </el-form-item>
+        </el-col>
+        <el-col v-if="form.file_text.length" :span="24">
+          <el-form-item>
+            <ol class="text-wrapper">
+              <li v-for="(item, index) in form.file_text" :key="index">
+                <a :href="item.path">{{ item.name }}</a>
+              </li>
+            </ol>
           </el-form-item>
         </el-col>
       </el-row>
@@ -106,10 +103,15 @@ export default {
     partyActivityItem: {
       type: Object,
       default: null
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
-    TinymceEditor
+    TinymceEditor,
+    UploadFile: () => import('@/components/UploadFile/index.vue')
   },
   data () {
     return {
@@ -123,8 +125,9 @@ export default {
         user_name: '',
         user_id: '',
         user_department: '',
-        file_picture: [],
-        text: ''
+        file_picture: '',
+        text: '',
+        file_text: []
       },
       rules: {
         title: [
@@ -153,6 +156,9 @@ export default {
         ],
         text: [
           { required: true, message: '活动内容必填', trigger: 'blur' }
+        ],
+        file_text: [
+          { required: true, message: '附件一必填', trigger: 'change' }
         ]
       },
       submitLoading: false
@@ -161,30 +167,44 @@ export default {
   computed: {
     userInfo() {
       return JSON.parse(Cookies.get('user') || null)
+    },
+    file_picture_url() {
+      if (process.env.NODE_ENV === 'development') {
+        return `${process.env.VUE_APP_BASE_API}${this.form.file_picture}`
+      } else {
+        return `${this.form.file_picture}`
+      }
     }
   },
   methods: {
     submit () {
       this.$refs.addForm.validate(valid => {
         if (valid) {
-          let formData = new FormData()
-          for (let key in this.form) {
-            if (key === 'file_picture') {
-              formData.append(key, this.form[key][0])
-            } else {
-              formData.append(key, this.form[key])
-            }
-          }
+          this.submitLoading = true
           if (this.partyActivityItem) {
-            partyActivityAdd(formData).then(res => {
+            partyActivityModify(this.form).then(res => {
               if (res && res.code === 200) {
-
+                this.submitLoading = false
+                this.$message.success(res.msg)
+                this.$emit('notifyRefresh')
+                this.cancel()
               }
             })
           } else {
-            partyActivityModify(formData).then(res => {
+            let formData = new FormData()
+            for (let key in this.form) {
+              if (key === 'file_text') {
+                formData.append(key, JSON.stringify(this.form[key]))
+              } else {
+                formData.append(key, this.form[key])
+              }
+            }
+            partyActivityAdd(formData).then(res => {
               if (res && res.code === 200) {
-                
+                this.submitLoading = false
+                this.$message.success(res.msg)
+                this.$emit('notifyRefresh')
+                this.cancel()
               }
             })
           }
@@ -195,12 +215,23 @@ export default {
     },
     cancel () {
       this.$emit('close')
+    },
+    // 图片上传成功
+    uploadImgSuccess (params) {
+      this.form.file_picture = params.path
+      params && this.$refs.addForm.clearValidate(['file_picture'])
+    },
+    // 附件上传成功
+    uploadTextSuccess (params) {
+      this.form.file_text.push(params)
+      params && this.$refs.addForm.clearValidate(['file_text'])
     }
   },
   created() {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
     if (this.partyActivityItem) {
+      this.partyActivityItem.file_text = JSON.parse(this.partyActivityItem.file_text || [])
       this.form = this.partyActivityItem
     }
   }
@@ -213,6 +244,11 @@ export default {
     padding: 0 0 16px;
     border-bottom: 1px solid #c9c9c9;
     margin-bottom: 20px;
+  }
+  ol.text-wrapper {
+    // list-style: none;
+    margin: 0;
+    padding-left: 16px;
   }
   .form-footer {
     text-align: center;

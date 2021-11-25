@@ -40,23 +40,13 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="单位：" prop="place">
-            <el-input v-model="form.place" placeholder="请输入内容" readonly></el-input>
+          <el-form-item label="单位：" prop="user_department">
+            <el-input v-model="form.user_department" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="标题图片：" prop="file_picture">
-            <el-upload
-              class="upload-demo"
-              action=""
-              :before-upload="beforeUpload"
-              multiple
-              :limit="1"
-              :show-file-list="false"
-              :file-list="form.file_picture">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-            </el-upload>
+            <upload-file :accept="'.jpeg,.jpg,.png,.gif'" @uploadSuccess="uploadImgSuccess" />
           </el-form-item>
         </el-col>
         <el-col v-if="form.type !== 2" :span="24">
@@ -64,17 +54,7 @@
         </el-col>
         <el-col v-else :span="24">
           <el-form-item label="视频：" prop="file_video">
-            <el-upload
-              class="upload-demo"
-              action=""
-              :before-upload="beforeUpload"
-              multiple
-              :limit="1"
-              :show-file-list="false"
-              :file-list="form.file_video">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-            </el-upload>
+            <upload-file :accept="'.mp4,.wav'" @uploadSuccess="uploadVideoSuccess" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -102,7 +82,8 @@ export default {
     }
   },
   components: {
-    TinymceEditor
+    TinymceEditor,
+    UploadFile: () => import('@/components/UploadFile/index.vue')
   },
   data () {
     return {
@@ -114,7 +95,8 @@ export default {
         user_name: '',
         user_id: '',
         source: '',
-        file_picture: [],
+        user_department: '',
+        file_picture: '',
         file_video: [],
         text: ''
       },
@@ -134,6 +116,9 @@ export default {
         source: [
           { required: true, message: '来源必填', trigger: 'blur' }
         ],
+        user_department: [
+          { required: true, message: '单位必填', trigger: 'blur' }
+        ],
         file_picture: [
           { required: true, message: '标题图片必填', trigger: 'change' }
         ],
@@ -144,7 +129,8 @@ export default {
           { required: true, message: '内容必填', trigger: 'blur' }
         ]
       },
-      submitLoading: false
+      submitLoading: false,
+      disabled: false
     }
   },
   computed: {
@@ -156,24 +142,25 @@ export default {
     submit () {
       this.$refs.addForm.validate(valid => {
         if (valid) {
-          let formData = new FormData()
-          for (let key in this.form) {
-            if (key === 'file_picture') {
-              formData.append(key, this.form[key][0])
-            } else {
-              formData.append(key, this.form[key])
-            }
-          }
+          this.submitLoading = true
           if (this.partyActivityItem) {
-            learningColumnAdd(formData).then(res => {
+            learningColumnModify(this.form).then(res => {
               if (res && res.code === 200) {
-
+                this.submitLoading = false
               }
             })
           } else {
-            learningColumnModify(formData).then(res => {
+            let formData = new FormData()
+            for (let key in this.form) {
+              if (key === 'file_video') {
+                formData.append(key, JSON.stringify(this.form[key]))
+              } else {
+                formData.append(key, this.form[key])
+              }
+            }
+            learningColumnAdd(formData).then(res => {
               if (res && res.code === 200) {
-                
+                this.submitLoading = false
               }
             })
           }
@@ -184,6 +171,15 @@ export default {
     },
     cancel () {
       this.$emit('close')
+    },
+    // 标题图片上传成功
+    uploadImgSuccess (params) {
+      this.form.file_picture = params.path
+      params && this.$refs.addForm.clearValidate(['file_picture'])
+    },
+    uploadVideoSuccess (params) {
+      this.form.file_video.push(params)
+      params && this.$refs.addForm.clearValidate(['file_video'])
     }
   },
   created() {

@@ -1,12 +1,12 @@
 <template>
-  <div class="issue-audit-wrapper">
+  <div class="question-maintenance-wrapper">
 
   </div>
 </template>
 
 <script>
 export default {
-  name: 'issueAudit',
+  name: 'questionMaintenance',
 
   data () {
     return {
@@ -14,13 +14,16 @@ export default {
     }
   },
   methods: {
-    
+
+  },
+  created() {
+
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.issue-audit-wrapper {
+.question-maintenance-wrapper {
   padding: 16px;
 }
 </style>

@@ -23,6 +23,15 @@ export function sensitiveWordsAdd(data) {
   })
 }
 
+// 修改
+export function sensitiveWordsModify(data) {
+  return request({
+    url: `/PartyBuildingApi/SensitiveWords/${data.id}`,
+    method: 'put',
+    data
+  })
+}
+
 // 删除
 export function sensitiveWordsDel(data) {
   return request({

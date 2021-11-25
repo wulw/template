@@ -70,20 +70,22 @@ export default {
     },
     handleInputConfirm() {
       let inputValue = this.inputValue
-      // if (inputValue) {
-      //   this.dynamicTags.push({
-      //     content: inputValue
-      //   })
-      // }
-      sensitiveWordsAdd({
-        content: inputValue
-      }).then(res => {
-        if (res && res.code === 200) {
-          this.$message.success(res.msg)
-          this.inputVisible = false
-          // this.inputValue = ''
-        }
-      })
+      if (inputValue) {
+        sensitiveWordsAdd({
+          content: inputValue
+        }).then(res => {
+          if (res && res.code === 200) {
+            this.$message.success(res.msg)
+            this.dynamicTags.push({
+              content: inputValue
+            })
+            this.getSensitiveWordsList()
+          }
+        })
+      }
+      
+      this.inputValue = ''
+      this.inputVisible = false
     }
   },
   created() {

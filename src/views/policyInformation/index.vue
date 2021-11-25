@@ -17,7 +17,7 @@
           type="date"
           format="yyyy-MM-dd"
           value-format="yyyy-MM-dd"
-          placeholder="发布时间">
+          placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -26,11 +26,11 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" :loading="queryLoading" @click="querySearch">查询</el-button>
       </el-form-item>
       <el-form-item style="float: right; margin-right: 0">
-        <el-button type="primary" @click="dialogVisible = true">新增</el-button>
-        <el-button type="primary" @click="handleDelete">删除</el-button>
+        <el-button type="primary" @click="() => { dialogVisible = true; policyInfoItem = null }">新增</el-button>
+        <el-button type="danger" @click="handleDelete">删除</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -42,7 +42,7 @@
       style="width: 100%" 
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
       <el-table-column label="标题" prop="title" width="240" align="center" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="资讯类型" prop="type" align="center">
         <template slot-scope="scope">
@@ -52,16 +52,19 @@
       <el-table-column label="发布人" prop="user_name" align="center"></el-table-column>
       <el-table-column label="来源" prop="source" align="center"></el-table-column>
       <el-table-column label="发布时间" prop="release_time" align="center"></el-table-column>
-      <el-table-column label="单位" prop="unit" align="center" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="审核状态" prop="auditStatus" align="center">
+      <el-table-column label="单位" prop="user_department" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column label="审核状态" prop="status" align="center">
         <template slot-scope="scope">
           <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 1" type="primary" size="small">置顶</el-button>
-          <el-button v-else-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <template v-else>
+            <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
+            <el-button v-else-if="scope.row.is_top === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -86,14 +89,14 @@
       :close-on-press-escape="false"
       :visible.sync="dialogVisible"
     >
-      <policy-info-add v-if="dialogVisible" :policyInfoItem="policyInfoItem" @close="dialogVisible = false" />
+      <policy-info-add v-if="dialogVisible" :policyInfoItem="policyInfoItem" @notifyRefresh="getPolicyInfoList" @close="dialogVisible = false" />
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { informationTypeList, auditStatusList } from '@/libs/term-mapping'
-import { getPolicyInfoList, policyInfoDel } from '@/api/policyInfo'
+import { getPolicyInfoList, policyInfoDel, policyInfoTop } from '@/api/policyInfo'
 import policyInfoAdd from './components/policyInfoAdd.vue'
 
 // 页数
@@ -118,6 +121,7 @@ export default {
         release_time: '',
         status: ''
       },
+      queryLoading: false,
       tableData: [],
       tableLoading: false,
       dialogVisible: false,
@@ -132,6 +136,12 @@ export default {
     this.getPolicyInfoList()
   },
   methods: {
+    // 查询按钮
+    querySearch () {
+      this.queryLoading = true
+      this.pagination.page = 1
+      this.getPolicyInfoList()
+    },
     getPolicyInfoList () {
       this.tableLoading = true
       getPolicyInfoList({ ...this.filterForm, ...this.pagination}).then(res => {
@@ -142,6 +152,7 @@ export default {
           }
         }
         this.tableLoading = false
+        this.queryLoading = false
       })
     },
     sizeChange (pageSize) {
@@ -172,7 +183,7 @@ export default {
             if (this.pagination.pageSize * (this.pagination.page - this.multipleSelection.length) + 1 === this.pagination.total) {
               this.pagination.page--
             }
-            this.getPartyMemberList()
+            this.getPolicyInfoList()
           }
         })
       }).catch(() => {
@@ -186,6 +197,21 @@ export default {
     handleEdit (row) {
       this.dialogVisible = true
       this.policyInfoItem = { ...row }
+    },
+    // 置顶/取消置顶
+    handleTop (row, val) {
+      let params = {
+        id: row.id,
+        is_top: val,
+        // sort: 
+      }
+      policyInfoTop(params).then(res => {
+        if (res && res.code === 200) {
+          this.$message.success(res.msg)
+          this.pagination.page = 1
+          this.getPolicyInfoList()
+        }
+      })
     }
   }
 }

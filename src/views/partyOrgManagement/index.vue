@@ -72,8 +72,7 @@
             format="yyyy-MM-dd"
             value-format="yyyy-MM-dd"
             type="date"
-            range-separator="/"
-            start-placeholder="开始日期">
+            placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -344,8 +343,9 @@ export default {
       getTreeList(params).then(res => {
         console.log(res)
         if (res && res.data) {
-          this.treeData = res.data
-          this.partyOrgItem = res.data[0]
+          this.treeData = res.data || []
+          this.partyOrgItem = res.data[0].children[0]
+          this.getPartyMemberList()
         }
       })
     },
@@ -360,7 +360,7 @@ export default {
         this.queryLoading = false
         this.tableLoading = false
         if (res && res.data) {
-          this.tableData = res.data.data
+          this.tableData = res.data.data || []
           this.pagination.total = res.data.total
         }
       })
@@ -381,7 +381,6 @@ export default {
   },
   created() {
     this.getTreeList()
-    this.getPartyMemberList()
   }
 }
 </script>

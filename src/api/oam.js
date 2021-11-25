@@ -1,7 +1,7 @@
 /**
  * @Date: 2021-11-22 22:17:05 
  * @Author: w_lw
- * @Description: 
+ * @Description: 在线测评维护
  */
 import request from '@/utils/request'
 
@@ -14,102 +14,45 @@ export function getList(params) {
   })
 }
 
-// 党组织新增
-export function partyOrgAdd(params) {
+// 添加
+export function onlineTestMaintenanceAdd(data) {
   return request({
-    url: '/PartyBuildingApi/PartyOrganization',
+    url: '/PartyBuildingApi/OnlineTestItems',
     method: 'post',
-    params
+    data
   })
 }
 
-// 党组织删除
-export function partyOrgDel(params) {
+// 删除
+export function onlineTestMaintenanceDel(data) {
   return request({
-    url: `/PartyBuildingApi/PartyOrganization/${params.id}`,
+    url: '/PartyBuildingApi/OnlineTestItems',
     method: 'delete',
-    params
+    data
   })
 }
 
-// 党组织修改
-export function partyOrgModify(params) {
+// 问卷维护
+// 添加
+export function questionMaintenanceAdd(data) {
   return request({
-    url: `/PartyBuildingApi/PartyOrganization/${params.id}`,
-    method: 'put',
-    params
-  })
-}
-
-// 党组织成员列表
-export function getPartyMemberList(params) {
-  return request({
-    url: '/PartyBuildingApi/PartyOrganizationInfo',
-    method: 'get',
-    params
-  })
-}
-
-// 党组织成员新增
-export function partyMemberAdd(params) {
-  return request({
-    url: '/PartyBuildingApi/PartyOrganizationInfo',
+    url: '/PartyBuildingApi/OnlineTestQuestions',
     method: 'post',
-    params
+    data
   })
 }
 
-// 党组织成员修改
-export function partyMemberModify(params) {
+// 列表
+export function questionMaintenanceList(params) {
   return request({
-    url: `/PartyBuildingApi/PartyOrganizationInfo/${params.id}`,
-    method: 'put',
-    params
-  })
-}
-
-// 党组织成员批量删除
-export function partyMemberDel(params) {
-  return request({
-    url: '/PartyBuildingApi/PartyOrganizationInfo',
-    method: 'delete',
-    params
-  })
-}
-
-// 导入模板下载
-export function partyMemberTemplate(params) {
-  return request({
-    url: `/PartyBuildingApi/partyOrganizationInfoTemplate`,
+    url: '/PartyBuildingApi/OnlineTestQuestions',
     method: 'get',
     params
   })
 }
 
-// 导入数据
-export function importPartyMemberData(params) {
-  return request({
-    url: `/PartyBuildingApi/partyOrganizationInfoImport`,
-    method: 'post',
-    params
-  })
-}
+// 统计
+// 列表
 
+// 问题选项查询
 
-// 导出数据
-export function exportPartyMemberData(params) {
-  return request({
-    url: `/PartyBuildingApi/partyOrganizationInfoExport/${params.id}`,
-    method: 'get',
-    params
-  })
-}
-
-// 搜索教师下拉列表
-export function searchTeacherList(params) {
-  return request({
-    url: '/BasicsApi/Teacher',
-    method: 'get',
-    params
-  })
-}

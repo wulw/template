@@ -77,6 +77,13 @@ export const constantRoutes = [
                 meta: { title: '在线测评维护' }
             },
             {
+                path: '/onlineAssessmentMaintenance/questionMaintenance',
+                name: 'questionMaintenance',
+                component: () => import('@/views/onlineAssessmentMaintenance/components/questionMaintenance'),
+                meta: { title: '问卷维护' },
+                hidden: true
+            },
+            {
                 path: '/onlineAssessment',
                 name: 'onlineAssessment',
                 component: () => import('@/views/onlineAssessment/index'),

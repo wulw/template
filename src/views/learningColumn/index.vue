@@ -16,7 +16,7 @@
           format="yyyy-MM-dd"
           value-format="yyyy-MM-dd"
           type="date"
-          placeholder="选择时间">
+          placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -25,11 +25,11 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" :loading="queryLoading" @click="querySearch">查询</el-button>
       </el-form-item>
       <el-form-item style="float: right; margin-right: 0">
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
-        <el-button type="primary" @click="handleDelete">删除</el-button>
+        <el-button type="danger" @click="handleDelete">删除</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -41,26 +41,28 @@
       style="width: 100%"
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column type="index" width="50"></el-table-column>
-      <el-table-column label="标题" prop="title" width="240" align="center" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="资讯类型" prop="informationType" align="center">
+      <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+      <el-table-column label="文章标题" prop="title" width="240" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column label="资讯类型" prop="type" align="center">
         <template slot-scope="scope">
-          <span>{{ informationTypeList.find(item => item.valueId === scope.row.informationType).valueDesc }}</span>
+          <span>{{ informationTypeList.find(item => item.valueId === scope.row.type).valueDesc }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="发布人" prop="publisher" align="center"></el-table-column>
+      <el-table-column label="发布人" prop="user_name" align="center"></el-table-column>
       <el-table-column label="来源" prop="source" align="center"></el-table-column>
-      <el-table-column label="发布时间" prop="publishTime" align="center"></el-table-column>
-      <el-table-column label="单位" prop="unit" align="center" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="审核状态" prop="auditStatus" align="center">
+      <el-table-column label="发布时间" prop="release_time" align="center"></el-table-column>
+      <el-table-column label="单位" prop="user_department" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column label="审核状态" prop="status" align="center">
         <template slot-scope="scope">
-          <span>{{ auditStatusList.find(item => item.valueId === scope.row.auditStatus).valueDesc }}</span>
+          <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 1" type="primary" size="small">置顶</el-button>
-          <el-button v-if-else="scope.row.status === 3" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <template v-else> 
+            <el-button v-if="scope.row.status === 1" type="primary" size="small">置顶</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -91,7 +93,7 @@
 </template>
 
 <script>
-import { articleTypeList, auditStatusList } from '@/libs/term-mapping'
+import { articleTypeList, auditStatusList, informationTypeList } from '@/libs/term-mapping'
 import { queryLearningColumnList, learningColumnDel } from '@/api/learning'
 import learningColumnAdd from './components/learningColumnAdd.vue'
 
@@ -113,12 +115,14 @@ export default {
       pagination,
       articleTypeList,
       auditStatusList,
+      informationTypeList,
       filterForm: {
         name: '',
         type: '',
         release_time: [],
         status: ''
       },
+      queryLoading: false,
       tableData: [],
       tableLoading: false,
       multipleSelection: [],
@@ -133,6 +137,11 @@ export default {
     this.getLearningColumnList()
   },
   methods: {
+    querySearch () {
+      this.queryLoading = true
+      this.pagination.page = 1
+      this.getLearningColumnList()
+    },
     getLearningColumnList () {
       try {
         this.tableLoading = true
@@ -142,10 +151,12 @@ export default {
             this.pagination.total = res.data.total
           }
           this.tableLoading = false
+          this.queryLoading = false
         })
       } catch(e) {
         console.log('学习专栏列表查询报错', e)
         this.tableLoading = false
+        this.queryLoading = false
       }
     },
     sizeChange (pageSize) {

@@ -9,8 +9,8 @@
         <el-button type="primary" @click="handleQuery" :loading="queryLoading">查询</el-button>
       </el-form-item>
       <el-form-item style="float: right; margin-right: 0">
-        <el-button type="primary">新增</el-button>
-        <el-button type="primary">删除</el-button>
+        <el-button type="primary" @click="() => { dialogVisible = true; dialogTag = 'addTestProject' }">新增项目</el-button>
+        <el-button type="danger">删除</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -23,12 +23,12 @@
       <el-table-column label="提交数量" prop="subCount" align="center"></el-table-column>
       <el-table-column label="状态" prop="auditStatus" align="center">
         <template slot-scope="scope">
-          <span>{{ auditStatusList.find(item => item.valueId === scope.row.auditStatus).valueDesc }}</span>
+          <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.auditStatus === '1'" type="primary" size="small">问卷维护</el-button>
+          <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'answerStatistical' }">统计</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -45,6 +45,17 @@
       :pager-count="5"
     >
     </el-pagination>
+    <!-- 新增项目dialog -->
+    <el-dialog
+      custom-class="dialog-wrapper"
+      width="50%"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :visible.sync="dialogVisible"
+    >
+      <add-test-project v-if="dialogVisible && dialogTag === 'addTestProject'" @close="dialogVisible = false" />
+      <answer-statistical v-if="dialogVisible && dialogTag === 'answerStatistical'" @close="dialogVisible = false" />
+    </el-dialog>
   </div>
 </template>
 
@@ -62,6 +73,10 @@ const pagination = {
 export default {
   name: 'partyActivityManagement',
 
+  components: {
+    addTestProject: () => import('./components/addTestProject.vue'),
+    answerStatistical: () => import('./components/answerStatistical.vue')
+  },
   data () {
     return {
       activityTypeList,
@@ -72,7 +87,9 @@ export default {
       tableData: [],
       pagination,
       tableLoading: false,
-      queryLoading: false
+      queryLoading: false,
+      dialogVisible: false,
+      dialogTag: ''
     }
   },
   methods: {
@@ -111,5 +128,13 @@ export default {
 <style lang="scss" scoped>
 .party-activity-management {
   padding: 16px;
+  ::v-deep.dialog-wrapper {
+    .el-dialog__header {
+      display: none;
+    }
+    .el-dialog__body {
+      padding: 16px;
+    }
+  }
 }
 </style>
