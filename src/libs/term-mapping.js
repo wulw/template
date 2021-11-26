@@ -99,3 +99,18 @@ export const topStatusList = [
     valueId: 2
   }
 ]
+
+// 阅卷状态
+export const markStatusList = [
+  {
+    valueDesc: '未提交',
+    valueId: 0
+  },
+  {
+    valueDesc: '阅卷中',
+    valueId: 1
+  },{
+    valueDesc: '阅卷已完成',
+    valueId: 2
+  }
+]

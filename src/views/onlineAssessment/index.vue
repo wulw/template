@@ -10,20 +10,25 @@
       </el-form-item>
     </el-form>
     <!-- 列表 -->
-    <el-table v-loading="tableLoading" stripe fit :data="tableData" style="width: 100%">
+    <el-table
+      v-loading="tableLoading"
+      stripe
+      fit 
+      :data="tableData" 
+      style="width: 100%">
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
       <el-table-column label="项目名称" prop="projectName" align="center"></el-table-column>
       <el-table-column label="考试开始时间" prop="strDate" align="center"></el-table-column>
       <el-table-column label="考试结束时间" prop="endDate" align="center"></el-table-column>
-      <el-table-column label="状态" prop="auditStatus" align="center">
+      <el-table-column label="状态" prop="status" align="center">
         <template slot-scope="scope">
-          <span>{{ auditStatusList.find(item => item.valueId === scope.row.auditStatus).valueDesc }}</span>
+          <span>{{ markStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.auditStatus === '1'" type="primary" size="small">查看</el-button>
+          <el-button v-if="scope.row.status === 1" type="primary" size="small">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -31,19 +36,18 @@
 </template>
 
 <script>
-import { activityTypeList, auditStatusList } from '@/libs/term-mapping'
+import { markStatusList } from '@/libs/term-mapping'
 import { getOaList } from '@/api/oa'
 import Cookies from 'js-cookie'
 
 export default {
-  name: 'partyActivityManagement',
+  name: 'onlineAssessment',
 
   data () {
     return {
-      activityTypeList,
-      auditStatusList,
+      markStatusList,
       filterForm: {
-        // name: ''
+        name: ''
       },
       tableData: [],
       tableLoading: false,

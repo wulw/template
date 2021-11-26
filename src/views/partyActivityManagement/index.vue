@@ -17,7 +17,7 @@
           format="yyyy-MM-dd"
           value-format="yyyy-MM-dd"
           type="date"
-          placeholder="选择日期">
+          placeholder="选择时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item>

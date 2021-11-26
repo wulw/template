@@ -12,7 +12,7 @@
     <!-- 列表 -->
     <el-table v-loading="tableLoading" stripe fit :data="tableData" style="width: 100%">
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
       <el-table-column label="项目名称" prop="projectName" align="center"></el-table-column>
       <el-table-column label="考试开始时间" prop="strDate" align="center"></el-table-column>
       <el-table-column label="考试结束时间" prop="endDate" align="center"></el-table-column>
@@ -27,7 +27,7 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="pagination.currentPage"
+      :current-page.sync="pagination.page"
       :page-sizes="[10, 20, 50, 100]"
       :page-size="pagination.pageSize"
       layout="total, prev, pager, next, sizes"
@@ -40,11 +40,10 @@
 </template>
 
 <script>
-import { activityTypeList, auditStatusList } from '@/libs/term-mapping'
 import { getRdList } from '@/api/rd'
 // 页数
 const pagination = {
-  currentPage: 1,
+  page: 1,
   pageSize: 10,
   total: 0
 }
@@ -54,8 +53,6 @@ export default {
 
   data () {
     return {
-      activityTypeList,
-      auditStatusList,
       filterForm: {
         name: ''
       },
@@ -69,6 +66,7 @@ export default {
     // 查询
     handleQuery () {
       this.queryLoading = true
+      this.pagination.page = 1
       this.getRdList()
     },
     sizeChange (pageSize) {

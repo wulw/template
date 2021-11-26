@@ -49,12 +49,27 @@
             <upload-file :accept="'.jpeg,.jpg,.png,.gif'" @uploadSuccess="uploadImgSuccess" />
           </el-form-item>
         </el-col>
+        <el-col v-if="form.file_picture" :span="24">
+          <el-form-item>
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="file_picture_url"
+              fit="fill"></el-image>
+          </el-form-item>
+        </el-col>
         <el-col v-if="form.type !== 2" :span="24">
           <tinymce-editor ref="editor" v-model="form.text" :disabled="disabled"></tinymce-editor>
         </el-col>
         <el-col v-else :span="24">
           <el-form-item label="视频：" prop="file_video">
             <upload-file :accept="'.mp4,.wav'" @uploadSuccess="uploadVideoSuccess" />
+          </el-form-item>
+        </el-col>
+        <el-col v-if="form.file_video.length" :span="24">
+          <el-form-item>
+            <ol class="video-wrapper">
+              <li v-for="(item, index) in form.file_video" :key="index"><video :src="item.path">{{ item.name }}</video></li>
+            </ol>
           </el-form-item>
         </el-col>
       </el-row>
@@ -136,6 +151,13 @@ export default {
   computed: {
     userInfo() {
       return JSON.parse(Cookies.get('user') || null)
+    },
+    file_picture_url() {
+      if (process.env.NODE_ENV === 'development') {
+        return `${process.env.VUE_APP_BASE_API}${this.form.file_picture}`
+      } else {
+        return `${this.form.file_picture}`
+      }
     }
   },
   methods: {
@@ -186,6 +208,7 @@ export default {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
     if (this.learnColumnItem) {
+      this.learnColumnItem.file_video = JSON.parse(this.learnColumnItem.file_video || [])
       this.form = this.learnColumnItem
     }
   }
@@ -198,6 +221,10 @@ export default {
     padding: 0 0 16px;
     border-bottom: 1px solid #c9c9c9;
     margin-bottom: 20px;
+  }
+  ol.video-wrapper {
+    margin: 0;
+    padding-left: 16px;
   }
   .form-footer {
     text-align: center;

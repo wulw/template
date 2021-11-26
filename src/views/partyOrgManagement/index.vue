@@ -72,7 +72,7 @@
             format="yyyy-MM-dd"
             value-format="yyyy-MM-dd"
             type="date"
-            placeholder="选择日期">
+            placeholder="选择时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -148,7 +148,7 @@ import { informationTypeList, auditStatusList, partyTypeList } from '@/libs/term
 import PartyOrgAdd from './components/partyOrgAdd.vue'
 import PartyMemberAdd from './components/partyMemberAdd.vue'
 import partyMemberImport from './components/partyMemberImport.vue'
-import { getTreeList, partyOrgDel, getPartyMemberList, partyMemberDel, exportPartyMemberData } from '@/api/org'
+import { getTreeList, partyOrgDel, getPartyMemberList, partyMemberDel } from '@/api/org'
 import Cookies from 'js-cookie'
 
 // 页数

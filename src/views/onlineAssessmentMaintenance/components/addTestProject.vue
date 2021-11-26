@@ -3,7 +3,7 @@
     <div class="title">
       <strong>新增测验项目</strong>
     </div>
-    <el-form ref="form" :model="form" :rules="rules" label-width="96px">
+    <el-form ref="form" :model="form" size="small" :rules="rules" label-width="96px">
       <el-row>
         <el-col :span="24">
           <el-form-item label="项目名称：" prop="name">
@@ -15,9 +15,9 @@
             <el-date-picker
               style="width: 100%"
               v-model="form.start_time"
-              format="yyyy-MM-dd"
-              value-format="yyyy-MM-dd"
-              type="date"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetime"
               placeholder="开始时间">
             </el-date-picker>
           </el-form-item>
@@ -27,15 +27,55 @@
             <el-date-picker
               style="width: 100%"
               v-model="form.end_time"
-              format="yyyy-MM-dd"
-              value-format="yyyy-MM-dd"
-              type="date"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="datetime"
               placeholder="结束时间">
             </el-date-picker>
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-transfer v-model="value" :data="data"></el-transfer>
+          <div class="flex-wrapper">
+            <div class="flex-item">
+              <p>党组织人员</p>
+              <el-tree
+                ref="leftTree"
+                :props="props"
+                :load="loadNode"
+                lazy
+                node-key="id"
+                show-checkbox
+                check-strictly
+                :default-expand-all="true"
+                @check-change="handleLeftCheckChange">
+                <span class="custom-tree-node" slot-scope="{ node, data }">
+                  <span v-if="node.level === 3">{{ data.user_name }}</span>
+                  <span v-else>{{ data.party_name }}</span>
+                </span>
+              </el-tree>
+            </div>
+            <div class="flex-item">
+              <el-button type="primary" icon="el-icon-arrow-right" size="small" @click="leftClick"></el-button>
+              <el-button type="primary" icon="el-icon-arrow-left" size="small" @click="rightClick"></el-button>
+            </div>
+            <div class="flex-item">
+              <p>已选择人员</p>
+              <el-tree
+                ref="rightTree"
+                :props="props"
+                :data="data"
+                node-key="id"
+                show-checkbox
+                empty-text="请选择人员"
+                :default-expand-all="false"
+                @check-change="handleRightCheckChange">
+                <span class="custom-tree-node" slot-scope="{ node, data }">
+                  <span v-if="node.level === 1">{{ data.user_name }}</span>
+                  <span v-else>{{ data.party_name }}</span>
+                </span>
+              </el-tree>
+            </div>
+          </div>
         </el-col>
       </el-row>
     </el-form>
@@ -47,28 +87,20 @@
 </template>
 
 <script>
+import { testProjectAdd } from '@/api/oam'
+import { getTreeList, getPartyMemberList } from '@/api/org'
+import Cookies from 'js-cookie'
+
 export default {
   name: 'addProject',
 
   data () {
-    const generateData = _ => {
-      const data = [];
-      for (let i = 1; i <= 15; i++) {
-        data.push({
-          key: i,
-          label: `备选项 ${ i }`,
-          disabled: i % 4 === 0
-        });
-      }
-      return data;
-    }
     return {
-      data: generateData(),
-      value: [1, 4],
       form: {
         name: '',
         start_time: '',
-        end_time: ''
+        end_time: '',
+        member: []
       },
       rules: {
         name: [
@@ -79,16 +111,116 @@ export default {
         ],
         end_time: [
           { required: true, message: '结束时间必填', trigger: 'blur' }
+        ],
+        member: [
+          { required: true, message: '成员必填', trigger: 'change' }
         ]
       },
-      submitLoading: false
+      submitLoading: false,
+      props: {
+        label: 'party_name',
+        children: 'children',
+        isLeaf: 'leaf'
+      },
+      data: []
+    }
+  },
+  computed: {
+    userInfo() {
+      return JSON.parse(Cookies.get('user') || null)
     }
   },
   methods: {
+    loadNode (node, resolve) {
+      console.log(node)
+      let params = {
+        school_id: this.userInfo.school_id, // ?
+        campus_id: this.userInfo.campus_id // ?
+      }
+      if (node.level === 0) {
+        getTreeList(params).then(res => {
+          if (res && res.code === 200) {
+            resolve(res.data.map(item => {
+              return { ...item, ...{ disabled: true } }
+            }))
+          }
+        })
+      } else if (node.level === 1) {
+        getTreeList(params).then(res => {
+          if (res && res.code === 200) {
+            resolve(res.data[0].children.map(item => {
+              return { ...item, ...{ disabled: true } }
+            }))
+          }
+        })
+      } else if (node.level === 2) {
+        getPartyMemberList({
+          party_id: node.data.id,
+          pageSize: 99999,
+          page: 1
+        }).then(res => {
+          if (res && res.code === 200) {
+            if (res.data.data.length) {
+              res.data.data = res.data.data.map(item => {
+                return { ...item, ...{ leaf: true } }
+              })
+              resolve(res.data.data)
+            } else {
+              resolve([])
+            }
+          }
+        })
+      } else {
+        resolve([])
+      }
+    },
+    handleLeftCheckChange (node) {
+      console.log(node)
+    },
+    handleRightCheckChange (node) {
+
+    },
+    leftClick () {
+      this.data = this.$refs.leftTree.getCheckedNodes()
+      this.$nextTick(() => {
+        this.$refs.leftTree.getCheckedNodes().map(item => {
+          this.$refs.rightTree.setChecked(item.id, true)
+        })
+      })
+    },
+    rightClick () {
+      let rightTreeList = [ ...this.data ]
+      rightTreeList.forEach((list, index) => {
+        this.$refs.rightTree.getCheckedNodes().map(item => {
+          if (list.id === item.id) {
+            rightTreeList.splice(index, 1)
+          }
+        })
+      })
+      console.log(rightTreeList)
+      rightTreeList.map(item => {
+        this.$refs.leftTree.setChecked(item.id, false)
+      })
+    },
+    // 确定
     submit () {
       this.$refs.form.validate(valid => {
         if (valid) {
-
+          this.submitLoading = true
+          this.form.member = this.$refs.rightTree.getCheckedNodes().map(item => item.id).join(',')
+          let params = {
+            user_id: this.userInfo.id,
+            user_name: this.userInfo.real_name,
+            quantity: this.$refs.rightTree.getCheckedNodes().map(item => item.id).length
+          }
+          testProjectAdd({ ...this.form, ...params }).then(res => {
+            if (res && res.code === 200) {
+              this.$message.success(res.msg)
+              this.cancel()
+              this.$emit('notifyRefresh')
+            }
+            this.submitLoading = false
+          })
         } else {
 
         }
@@ -98,6 +230,9 @@ export default {
     cancel () {
       this.$emit('close')
     }
+  },
+  created() {
+    // this.initOrgTreeList()
   }
 }
 </script>
@@ -108,6 +243,36 @@ export default {
     padding: 0 0 16px;
     border-bottom: 1px solid #c9c9c9;
     margin-bottom: 20px;
+  }
+  .flex-wrapper {
+    display: flex;
+    .flex-item {
+      border: 1px solid #c9c9c9;
+      &:nth-child(1),
+      &:nth-child(3) {
+        flex: 1;
+        p {
+          text-align: center;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #c9c9c9;
+        }
+      }
+      &:nth-child(2) {
+        border-left: none;
+        border-right: none;
+        flex: none;
+        width: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        .el-button {
+          &:nth-child(2) {
+            margin: 16px 0 0 0;
+          }
+        }
+      }
+    }
   }
   .form-footer {
     text-align: center;

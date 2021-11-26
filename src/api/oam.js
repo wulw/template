@@ -14,8 +14,9 @@ export function getList(params) {
   })
 }
 
+// 测验项目
 // 添加
-export function onlineTestMaintenanceAdd(data) {
+export function testProjectAdd(data) {
   return request({
     url: '/PartyBuildingApi/OnlineTestItems',
     method: 'post',
@@ -24,7 +25,7 @@ export function onlineTestMaintenanceAdd(data) {
 }
 
 // 删除
-export function onlineTestMaintenanceDel(data) {
+export function testProjectDel(data) {
   return request({
     url: '/PartyBuildingApi/OnlineTestItems',
     method: 'delete',
@@ -56,3 +57,13 @@ export function questionMaintenanceList(params) {
 
 // 问题选项查询
 
+
+// 成绩查看
+// 列表
+export function queryscoreViewList(params) {
+  return request({
+    url: '/PartyBuildingApi/getItemIdInfo',
+    method: 'get',
+    params
+  })
+}
