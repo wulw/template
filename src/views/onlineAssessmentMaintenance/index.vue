@@ -12,7 +12,8 @@ export default {
 
   components: {
     partyActivityManagement: () => import('./components/partyActivityManagement.vue'),
-    scoreViewList: () => import('./components/scoreViewList.vue')
+    scoreViewList: () => import('./components/scoreViewList.vue'),
+    questionMaintenance: () => import('./components/questionMaintenance.vue')
   },
   data () {
     return {
@@ -23,10 +24,15 @@ export default {
 
   },
   created() {
-    EventBus.$on('openScoreView', () => {
+    EventBus.$on('openScoreView', (id) => {
       this.componentsName = 'scoreViewList'
+      EventBus.$emit('scoreView', id)
     })
-
+    
+    EventBus.$on('openQuestionMaintenance', (id) => {
+      this.componentsName = 'questionMaintenance'
+      EventBus.$emit('questionMaintenance', id)
+    })
     
     EventBus.$on('back', (params) => {
       this.componentsName = params
@@ -37,6 +43,6 @@ export default {
 
 <style lang="scss" scoped>
 .index-wrapper {
-
+  height: 100%;
 }
 </style>

@@ -32,11 +32,25 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+      @size-change="sizeChange"
+      @current-change="currentChange"
+      :current-page.sync="pagination.page"
+      :page-sizes="[10, 20, 50, 100]"
+      :page-size="pagination.pageSize"
+      layout="total, prev, pager, next, sizes"
+      :total="pagination.total"
+      background
+      :pager-count="5"
+    >
+    </el-pagination>
   </div>
 </template>
 
 <script>
 import { EventBus } from '@/utils/eventBus'
+import { queryscoreViewList } from '@/api/oam'
 
 const pagination = {
   pageSize: 10,
@@ -54,7 +68,9 @@ export default {
       },
       queryLoading: false,
       tableData: [],
-      tableLoading: false
+      pagination,
+      tableLoading: false,
+      item_id: ''
     }
   },
   methods: {
@@ -68,19 +84,34 @@ export default {
     querySearch () {
       this.queryLoading = true
     },
+    sizeChange (pageSize) {
+      this.pagination.pageSize = pageSize
+      this.pagination.page = 1
+      this.getScoreViewList()
+    },
+    currentChange (currentPage) {
+      this.pagination.page = currentPage
+      this.getScoreViewList()
+    },
     getScoreViewList () {
       let params = {
-        item_id: ''
+        item_id: this.item_id
       }
       queryscoreViewList({ ...this.filterForm, ...this.pagination, ...params }).then(res => {
         if (res && res.code === 200) {
-          this.tableData = res.data || []
+          this.tableData = res.data.data || []
         }
       })
+    },
+    handleSelectionChange (val) {
+      console.log(val)
     }
   },
   created() {
-    this.getScoreViewList()
+    EventBus.$on('scoreView', (id) => {
+      this.item_id = id
+      this.getScoreViewList()
+    })
   }
 }
 </script>

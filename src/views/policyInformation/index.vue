@@ -1,5 +1,5 @@
 <template>
-  <div class="policy-information">
+  <div class="policy-information" v-if="!showComments">
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
@@ -28,7 +28,7 @@
       <el-form-item>
         <el-button type="primary" :loading="queryLoading" @click="querySearch">查询</el-button>
       </el-form-item>
-      <el-form-item style="float: right; margin-right: 0">
+      <el-form-item style="float: right; margin-right: 0" v-if="!auditFlag">
         <el-button type="primary" @click="() => { dialogVisible = true; policyInfoItem = null }">新增</el-button>
         <el-button type="danger" @click="handleDelete">删除</el-button>
       </el-form-item>
@@ -58,13 +58,19 @@
           <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="160" align="center">
+      <el-table-column label="操作" width="240" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <template v-else>
-            <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
-            <el-button v-else-if="scope.row.is_top === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
+          <template v-if="auditFlag">
+            <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
           </template>
+          <template v-else>
+            <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <template v-else>
+              <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
+              <el-button v-else-if="scope.row.is_top === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
+            </template>
+          </template>
+          <el-button type="primary" size="small" @click="showComments = true">评论管理</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -89,9 +95,10 @@
       :close-on-press-escape="false"
       :visible.sync="dialogVisible"
     >
-      <policy-info-add v-if="dialogVisible" :policyInfoItem="policyInfoItem" @notifyRefresh="getPolicyInfoList" @close="dialogVisible = false" />
+      <policy-info-add v-if="dialogVisible" :policyInfoItem="policyInfoItem" :auditFlag="auditFlag" @notifyRefresh="getPolicyInfoList" @close="dialogVisible = false" />
     </el-dialog>
   </div>
+  <comments-manage v-else />
 </template>
 
 <script>
@@ -110,6 +117,15 @@ export default {
   components: { policyInfoAdd },
   name: 'policyInformation',
   
+  props: {
+    auditFlag: {
+      type: Boolean,
+      default: false
+    }
+  },
+  components: {
+    commentsManage: () => import('./components/commentsManage.vue')
+  },
   data () {
     return {
       pagination,
@@ -126,7 +142,8 @@ export default {
       tableLoading: false,
       dialogVisible: false,
       multipleSelection: [],
-      policyInfoItem: null
+      policyInfoItem: null,
+      showComments: false
     }
   },
   computed: {

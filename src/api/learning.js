@@ -41,3 +41,12 @@ export function learningColumnDel(data) {
   })
 } 
 
+// 审核
+export function learningColumnAudit(data) {
+  return request({
+    url: '/PartyBuildingApi/examineLearningColumn',
+    method: 'post',
+    data
+  })
+}
+

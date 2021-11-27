@@ -1,9 +1,9 @@
 <template>
   <div class="policy-info-add-wrapper">
     <div class="title">
-      <strong>资讯维护</strong>
+      <strong>{{ `资讯${!auditFlag ? '维护' : '详情'}` }}</strong>
     </div>
-    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small">
+    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="auditFlag">
       <el-row>
         <el-col :span="12">
           <el-form-item label="文章标题：" prop="title">
@@ -58,14 +58,16 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <tinymce-editor ref="editor" v-model="form.text" :disabled="disabled"></tinymce-editor>
+          <tinymce-editor ref="editor" v-model="form.text" :disabled="auditFlag"></tinymce-editor>
         </el-col>
       </el-row>
     </el-form>
     <div class="form-footer">
-      <el-button type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
-      <el-button type="default" size="small" @click="cancel">取 消</el-button>
+      <el-button v-if="auditFlag && policyInfoItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
+      <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button type="default" size="small" @click="cancel">{{ `${policyInfoItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
+    <audit-form :auditDialogVisible="auditDialogVisible" auditModule="policyInfo" :id="policyInfoItem.id" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -74,18 +76,24 @@ import TinymceEditor from '@/components/tinymce-vue'
 import { informationTypeList } from '@/libs/term-mapping'
 import { policyInfoAdd, policyInfoModify } from '@/api/policyInfo'
 import Cookies from 'js-cookie'
+import AuditForm from '@/components/AuditForm/auditForm.vue'
 
 export default {
   name: 'policyInfoAdd',
 
   components: {
     TinymceEditor,
-    UploadFile: () => import('@/components/UploadFile/index.vue')
+    UploadFile: () => import('@/components/UploadFile/index.vue'),
+    AuditForm
   },
   props: {
     policyInfoItem: {
       type: Object,
       default: null
+    },
+    auditFlag: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -126,7 +134,8 @@ export default {
           { required: true, message: '标题图片必填', trigger: 'change' }
         ]
       },
-      disabled: false
+      // disabled: false,
+      auditDialogVisible: false
     }
   },
   computed: {

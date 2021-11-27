@@ -24,17 +24,21 @@
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
       <el-table-column label="项目名称" prop="name" align="center"></el-table-column>
-      <el-table-column label="考试开始时间" prop="start_time" align="center"></el-table-column>
-      <el-table-column label="考试结束时间" prop="end_time" align="center"></el-table-column>
-      <el-table-column label="提交数量" prop="quantity" align="center"></el-table-column>
+      <el-table-column label="考试开始时间" prop="start_time" align="center" show-overflow-tooltip></el-table-column>
+      <el-table-column label="考试结束时间" prop="end_time" align="center" show-overflow-tooltip></el-table-column>
+      <el-table-column label="提交数量" prop="quantity" align="center">
+        <template slot-scope="scope">
+          <span>{{ `${scope.row.quantity_p}/${scope.row.quantity}` }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" prop="status" align="center">
         <template slot-scope="scope">
-          <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
+          <span>{{ examStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="360" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="questionMaintanence(scope.row)">问卷维护</el-button>
+          <el-button type="primary" size="small" @click="questionMaintenance(scope.row)">问卷维护</el-button>
           <el-button type="primary" size="small" @click="scoreView(scope.row)">成绩查看</el-button>
           <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'answerStatistical' }">统计</el-button>
         </template>
@@ -68,7 +72,7 @@
 </template>
 
 <script>
-import { activityTypeList, auditStatusList } from '@/libs/term-mapping'
+import { examStatusList } from '@/libs/term-mapping'
 import { getList, testProjectDel } from '@/api/oam'
 import { EventBus } from '@/utils/eventBus'
 
@@ -88,8 +92,7 @@ export default {
   },
   data () {
     return {
-      activityTypeList,
-      auditStatusList,
+      examStatusList,
       filterForm: {
         name: ''
       },
@@ -158,12 +161,12 @@ export default {
       this.multipleSelection = val
     },
     // 问卷维护
-    questionMaintanence (row) {
-
+    questionMaintenance (row) {
+      EventBus.$emit('openQuestionMaintenance', row.id)
     },
     // 成绩查看
     scoreView (row) {
-      EventBus.$emit('openScoreView')
+      EventBus.$emit('openScoreView', row.id)
     }
   },
   created() {

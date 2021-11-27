@@ -114,3 +114,15 @@ export const markStatusList = [
     valueId: 2
   }
 ]
+
+// 考试状态
+export const examStatusList = [
+  {
+    valueDesc: '未开始',
+    valueId: 0
+  },
+  {
+    valueDesc: '已开始',
+    valueId: 1
+  }
+]
