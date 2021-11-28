@@ -3,7 +3,7 @@
     <div class="title">
       <strong>活动维护</strong>
     </div>
-    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="disabled">
+    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="auditFlag">
       <el-row>
         <el-col :span="12">
           <el-form-item label="活动标题：" prop="title">
@@ -64,7 +64,7 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="活动内容：" prop="text">
-            <tinymce-editor ref="editor" v-model="form.text" :disabled="disabled"></tinymce-editor>
+            <tinymce-editor ref="editor" v-model="form.text" :disabled="auditFlag"></tinymce-editor>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -84,9 +84,11 @@
       </el-row>
     </el-form>
     <div class="form-footer">
-      <el-button type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
-      <el-button type="default" size="small" @click="cancel">取 消</el-button>
+      <el-button v-if="auditFlag" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
+      <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button type="default" size="small" @click="cancel">{{ `${partyActivityItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
+    <audit-form :auditDialogVisible="auditDialogVisible" auditModule="partyActivity" :id="partyActivityItem.id" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -104,14 +106,19 @@ export default {
       type: Object,
       default: null
     },
-    disabled: {
+    // disabled: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    auditFlag: {
       type: Boolean,
       default: false
     }
   },
   components: {
     TinymceEditor,
-    UploadFile: () => import('@/components/UploadFile/index.vue')
+    UploadFile: () => import('@/components/UploadFile/index.vue'),
+    AuditForm: () => import('@/components/AuditForm/auditForm.vue')
   },
   data () {
     return {
@@ -161,7 +168,8 @@ export default {
           { required: true, message: '附件一必填', trigger: 'change' }
         ]
       },
-      submitLoading: false
+      submitLoading: false,
+      auditDialogVisible: false
     }
   },
   computed: {

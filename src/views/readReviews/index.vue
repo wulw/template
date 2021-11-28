@@ -1,5 +1,5 @@
 <template>
-  <div class="party-activity-management">
+  <div class="party-activity-management" v-if="!showMarkExamList">
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
@@ -19,7 +19,7 @@
       <el-table-column label="提交数量" prop="subCount" align="center"></el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.auditStatus === '1'" type="primary" size="small">查看</el-button>
+          <el-button type="primary" size="small" @click="() => { showMarkExamList = true; readReviewItem = scope.row }">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -37,10 +37,11 @@
     >
     </el-pagination>
   </div>
+  <mark-exam-list v-else @goBack="showMarkExamList = false" :readReviewItem="readReviewItem" />
 </template>
 
 <script>
-import { getRdList } from '@/api/rd'
+import { queryRdList } from '@/api/rd'
 // 页数
 const pagination = {
   page: 1,
@@ -49,8 +50,11 @@ const pagination = {
 }
 
 export default {
-  name: 'partyActivityManagement',
+  name: 'readReviews',
 
+  components: {
+    markExamList: () => import('./components/markExamList.vue')
+  },
   data () {
     return {
       filterForm: {
@@ -59,7 +63,9 @@ export default {
       tableData: [],
       pagination,
       tableLoading: false,
-      queryLoading: false
+      queryLoading: false,
+      showMarkExamList: false,
+      readReviewItem: {}
     }
   },
   methods: {
@@ -72,15 +78,15 @@ export default {
     sizeChange (pageSize) {
       this.pagination.pageSize = pageSize
       this.pagination.page = 1
-      this.getList()
+      this.getRdList()
     },
     currentChange (currentPage) {
       this.pagination.page = currentPage
-      this.getList()
+      this.getRdList()
     },
     getRdList () {
       this.tableLoading = true
-      getRdList({ ...this.filterForm, ...this.pagination }).then(res => {
+      queryRdList({ ...this.filterForm, ...this.pagination }).then(res => {
         this.queryLoading = false
         this.tableLoading = false
         if (res && res.code === 200) {

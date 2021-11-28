@@ -1,5 +1,5 @@
 <template>
-  <div class="party-activity-management">
+  <div class="party-activity-management" v-if="!showOnlineExamView">
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
@@ -28,11 +28,13 @@
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 1" type="primary" size="small">查看</el-button>
+          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="showOnlineExamView = true">进入</el-button>
+          <el-button v-else type="primary" size="small">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
+  <online-exam-view v-else @submit="showOnlineExamView = false" />
 </template>
 
 <script>
@@ -43,15 +45,23 @@ import Cookies from 'js-cookie'
 export default {
   name: 'onlineAssessment',
 
+  components: {
+    onlineExamView: () => import('./components/onlineExamView.vue')
+  },
   data () {
     return {
       markStatusList,
       filterForm: {
         name: ''
       },
-      tableData: [],
+      tableData: [
+        {
+          status: 0
+        }
+      ],
       tableLoading: false,
-      queryLoading: false
+      queryLoading: false,
+      showOnlineExamView: false
     }
   },
   computed: {
@@ -74,7 +84,7 @@ export default {
         this.queryLoading = false
         this.tableLoading = false
         if (res && res.code === 200) {
-          this.tableData = res.data || []
+          // this.tableData = res.data || []
         } 
       })
     }

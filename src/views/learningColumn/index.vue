@@ -1,5 +1,5 @@
 <template>
-  <div class="learning-column">
+  <div class="learning-column" v-if="!showComments">
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
@@ -27,7 +27,7 @@
       <el-form-item>
         <el-button type="primary" :loading="queryLoading" @click="querySearch">查询</el-button>
       </el-form-item>
-      <el-form-item style="float: right; margin-right: 0">
+      <el-form-item v-if="!auditFlag" style="float: right; margin-right: 0">
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
         <el-button type="danger" @click="handleDelete">删除</el-button>
       </el-form-item>
@@ -57,11 +57,17 @@
           <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="160" align="center">
+      <el-table-column label="操作" width="240" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <template v-else> 
-            <el-button v-if="scope.row.status === 1" type="primary" size="small">置顶</el-button>
+          <template v-if="auditFlag">
+            <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
+          </template>
+          <template v-else>
+            <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <template v-else> 
+              <el-button v-if="scope.row.status === 1" type="primary" size="small">置顶</el-button>
+            </template>
+            <el-button type="primary" size="small" @click="() => { showComments = true; learningColumnItem = scope.row }">评论管理</el-button>
           </template>
         </template>
       </el-table-column>
@@ -87,9 +93,10 @@
       :close-on-press-escape="false"
       :visible.sync="dialogVisible"
     >
-      <learning-column-add v-if="dialogVisible" :learningColumnItem="learningColumnItem" @close="dialogVisible = false" />
+      <learning-column-add v-if="dialogVisible" :learningColumnItem="learningColumnItem" :auditFlag="auditFlag" @notifyRefresh="getLearningColumnList" @close="dialogVisible = false" />
     </el-dialog>
   </div>
+  <comments-manage v-else :learningColumnItem="learningColumnItem" @goBack="showComments = false" />
 </template>
 
 <script>
@@ -107,8 +114,15 @@ const pagination = {
 export default {
   name: 'learningColumn',
   
+  props: {
+    auditFlag: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
-    learningColumnAdd
+    learningColumnAdd,
+    commentsManage: () => import('./components/commentsManage.vue')
   },
   data () {
     return {
@@ -127,7 +141,8 @@ export default {
       tableLoading: false,
       multipleSelection: [],
       learningColumnItem: null,
-      dialogVisible: false
+      dialogVisible: false,
+      showComments: false
     }
   },
   computed: {

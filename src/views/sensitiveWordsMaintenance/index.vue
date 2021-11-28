@@ -37,6 +37,7 @@ export default {
   },
   methods: {
     getSensitiveWordsList () {
+      this.dynamicTags.length = 0
       querySensitiveWordsList().then(res => {
         if (res && res.code === 200) {
           this.dynamicTags = res.data || []

@@ -69,8 +69,8 @@
               <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
               <el-button v-else-if="scope.row.is_top === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
             </template>
+            <el-button type="primary" size="small" @click="() => { showComments = true; policyInfoItem = scope.row }">评论管理</el-button>
           </template>
-          <el-button type="primary" size="small" @click="showComments = true">评论管理</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -98,7 +98,7 @@
       <policy-info-add v-if="dialogVisible" :policyInfoItem="policyInfoItem" :auditFlag="auditFlag" @notifyRefresh="getPolicyInfoList" @close="dialogVisible = false" />
     </el-dialog>
   </div>
-  <comments-manage v-else />
+  <comments-manage v-else :policyInfoItem="policyInfoItem" @goBack="showComments = false" />
 </template>
 
 <script>
@@ -114,7 +114,6 @@ const pagination = {
 }
 
 export default {
-  components: { policyInfoAdd },
   name: 'policyInformation',
   
   props: {
@@ -124,6 +123,7 @@ export default {
     }
   },
   components: {
+    policyInfoAdd,
     commentsManage: () => import('./components/commentsManage.vue')
   },
   data () {

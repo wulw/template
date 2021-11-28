@@ -1,9 +1,9 @@
 <template>
   <div class="learning-column-add-wrapper">
     <div class="title">
-      <strong>文章维护</strong>
+      <strong>{{ `文章${!auditFlag ? '维护' : '详情'}` }}</strong>
     </div>
-    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small">
+    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="auditFlag">
       <el-row>
         <el-col :span="12">
           <el-form-item label="文章标题：" prop="title">
@@ -58,7 +58,7 @@
           </el-form-item>
         </el-col>
         <el-col v-if="form.type !== 2" :span="24">
-          <tinymce-editor ref="editor" v-model="form.text" :disabled="disabled"></tinymce-editor>
+          <tinymce-editor ref="editor" v-model="form.text" :disabled="auditFlag"></tinymce-editor>
         </el-col>
         <el-col v-else :span="24">
           <el-form-item label="视频：" prop="file_video">
@@ -75,9 +75,11 @@
       </el-row>
     </el-form>
     <div class="form-footer">
-      <el-button type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
-      <el-button type="default" size="small" @click="cancel">取 消</el-button>
+      <el-button v-if="auditFlag && learningColumnItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
+      <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button type="default" size="small" @click="cancel">{{ `${learningColumnItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
+    <audit-form :auditDialogVisible="auditDialogVisible" auditModule="learningColumn" :id="learningColumnItem.id" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -91,14 +93,19 @@ export default {
   name: 'learningColumnAdd',
 
   props: {
-    learnColumnItem: {
+    learningColumnItem: {
       type: Object,
       default: null
+    },
+    auditFlag: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
     TinymceEditor,
-    UploadFile: () => import('@/components/UploadFile/index.vue')
+    UploadFile: () => import('@/components/UploadFile/index.vue'),
+    AuditForm: () => import('@/components/AuditForm/auditForm.vue')
   },
   data () {
     return {
@@ -145,7 +152,8 @@ export default {
         ]
       },
       submitLoading: false,
-      disabled: false
+      // disabled: false,
+      auditDialogVisible: false
     }
   },
   computed: {

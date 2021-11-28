@@ -85,4 +85,22 @@ export function policyInfoRepost(data) {
     data
   })
 }
- 
+
+// 评论管理
+// 列表
+export function queryCommentList(params) {
+  return request({
+    url: '/PartyBuildingApi/InformationComment',
+    method: 'get',
+    params
+  })
+}
+
+// 删除
+export function commentDel(params) {
+  return request({
+    url: `/PartyBuildingApi/InformationComment/${params.id}`,
+    method: 'delete',
+    params
+  })
+}

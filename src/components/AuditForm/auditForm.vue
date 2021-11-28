@@ -62,7 +62,7 @@ export default {
       default: ''
     },
     id: {
-      type: String,
+      type: String | Number,
       default: ''
     }
   },
@@ -118,7 +118,7 @@ export default {
                 if (res && res.code === 200) {
                   this.$message.success(res.msg)
                   this.cancel()
-                  this.$emit('notifyRefresh')
+                  EventBus.$emit('notifyRefresh')
                 }
                 this.submitLoading = false
               })
@@ -132,7 +132,7 @@ export default {
                 if (res && res.code === 200) {
                   this.$message.success(res.msg)
                   this.cancel()
-                  this.$emit('notifyRefresh')
+                  EventBus.$emit('notifyRefresh')
                 }
                 this.submitLoading = false
               })
@@ -167,7 +167,7 @@ export default {
   border-bottom: 1px solid #c9c9c9;
 }
 .dialog-body {
-  padding: 16px 32px;
+  padding: 16px;
 }
 .dialog-footer {
   text-align: center;

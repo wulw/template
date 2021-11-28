@@ -50,3 +50,21 @@ export function learningColumnAudit(data) {
   })
 }
 
+// 评论管理
+// 列表
+export function queryCommentList(params) {
+  return request({
+    url: '/PartyBuildingApi/LearningComment',
+    method: 'get',
+    params
+  })
+}
+
+// 删除
+export function commentDel(data) {
+  return request({
+    url: '/PartyBuildingApi/LearningComment',
+    method: 'delete',
+    data
+  })
+}

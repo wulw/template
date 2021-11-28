@@ -28,7 +28,7 @@
       <el-form-item>
         <el-button type="primary" :loading="queryLoading" @click="querySearch">查询</el-button>
       </el-form-item>
-      <el-form-item style="float: right; margin-right: 0">
+      <el-form-item v-if="!auditFlag" style="float: right; margin-right: 0">
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
         <el-button type="danger" @click="handleDelete">删除</el-button>
       </el-form-item>
@@ -61,7 +61,12 @@
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <template v-if="auditFlag">
+            <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
+          </template>
+          <template v-else>
+            <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -86,7 +91,7 @@
       :close-on-press-escape="false"
       :visible.sync="dialogVisible"
     >
-      <party-activity-add v-if="dialogVisible" :partyActivityItem="partyActivityItem" @notifyRefresh="getPartyActivityList" @close="dialogVisible = false" />
+      <party-activity-add v-if="dialogVisible" :partyActivityItem="partyActivityItem" :auditFlag="auditFlag" @notifyRefresh="getPartyActivityList" @close="dialogVisible = false" />
     </el-dialog>
   </div>
 </template>
@@ -106,6 +111,12 @@ const pagination = {
 export default {
   name: 'partyActivityManagement',
 
+  props: {
+    auditFlag: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     partyActivityAdd
   },

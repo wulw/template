@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { queryCommentList, commentDel } from '@/api/policyInfo'
+import { queryCommentList, commentDel } from '@/api/learning'
 
 // 分页
 const pagination = {
@@ -49,7 +49,7 @@ export default {
   name: 'commentsManage',
 
   props: {
-    policyInfoItem: {
+    learningColumnItem: {
       type: Object,
       default: () => {}
     }
@@ -87,7 +87,7 @@ export default {
     },
     getCommentList () {
       let params = {
-        info_id: this.policyInfoItem.id
+        learning_id: this.learningColumnItem.id
       }
       queryCommentList({ ...this.pagination, ...params }).then(res => {
         if (res && res.code === 200) {
@@ -107,7 +107,7 @@ export default {
     }
   },
   created() {
-    if (this.policyInfoItem && this.policyInfoItem.id) {
+    if (this.learningColumnItem && this.learningColumnItem.id) {
       this.getCommentList()
     }
   }
