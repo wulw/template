@@ -12,9 +12,22 @@ let partyAgeChart = null
 export default {
   name: 'partyAge',
 
+  props: {
+    ageData: {
+      type: Array,
+      default: []
+    }
+  },
   data () {
     return {
 
+    }
+  },
+  watch: {
+    ageData(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.createPartyAgeChart()
+      }
     }
   },
   methods: {
@@ -43,14 +56,14 @@ export default {
         },
         yAxis: {
           type: 'category',
-          data: ['30岁以下', '30-40岁', '41-50岁', '51-60岁', '60岁以上']
+          data: this.ageData.map(item => item.name)
         },
         series: [
           {
             name: '2011',
             type: 'bar',
             barWidth: 8,
-            data: [18203, 23489, 29034, 104970, 131744]
+            data: this.ageData.map(item => item.count)
           }
         ]
       }
@@ -60,7 +73,7 @@ export default {
     }
   },
   mounted() {
-    this.createPartyAgeChart()
+    // this.getHomeList()
   }
 }
 </script>

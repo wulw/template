@@ -12,9 +12,22 @@ let partyActivityChart = null
 export default {
   name: 'partyActivity',
 
+  props: {
+    activityData: {
+      type: Object,
+      default: null
+    }
+  },
   data () {
     return {
 
+    }
+  },
+  watch: {
+    activityData(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.initEcharts()
+      }
     }
   },
   methods: {
@@ -45,37 +58,37 @@ export default {
           {
             data: [
               {
-                value: 100,
+                value: this.activityData.zzshh,
                 itemStyle: {
                   color: '#D0021B'
                 }
               },
               {
-                value: 200,
+                value: this.activityData.shyk,
                 itemStyle: {
                   color: '#F07138'
                 }
               },
               {
-                value: 150,
+                value: this.activityData.zxzxxh,
                 itemStyle: {
                   color: '#F5A623'
                 }
               },
               {
-                value: 80,
+                value: this.activityData.mzshh,
                 itemStyle: {
                   color: '#5CBEDC'
                 }
               },
               {
-                value: 70,
+                value: this.activityData.ztdyhd,
                 itemStyle: {
                   color: '#E4848E'
                 }
               },
               {
-                value: 110,
+                value: this.activityData.thtx,
                 itemStyle: {
                   color: '#FFDA33'
                 }
@@ -93,7 +106,6 @@ export default {
     }
   },
   mounted() {
-    this.initEcharts()
     window.onresize = function() {
       partyActivityChart.resize()
     }

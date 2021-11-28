@@ -12,20 +12,26 @@ let partyProfileChart = null
 export default {
   name: 'partyProfile',
 
+  props: {
+    profileData: {
+      type: Object,
+      default: null
+    }
+  },
   data () {
     return {
 
     }
   },
+  watch: {
+    profileData(newVal, oldVal){
+      if (newVal !== oldVal) {
+        this.createPartyProfileChart()
+      }
+    }
+  },
   methods: {
     createPartyProfileChart() {
-      const data = [
-        {
-          name: '200人',
-          value: 200
-        }
-      ]
-
       const option = {
         color: ['#D0021B'],
         title: [
@@ -59,7 +65,10 @@ export default {
             type: 'pie',
             radius: ['40%', '50%'],
             center: ['50%', '50%'],
-            data: data,
+            data: [{
+               name: this.profileData.dangzongzhi + '人',
+               value: this.profileData.dangzongzhi
+            }],
             left: 0,
             right: '75%',
             top: 0,
@@ -73,7 +82,10 @@ export default {
             type: 'pie',
             radius: ['40%', '50%'],
             center: ['50%', '50%'],
-            data: data,
+            data: [{
+               name: this.profileData.dangzhibu + '人',
+               value: this.profileData.dangzhibu
+            }],
             label: {
               show: true,
               position: 'center'
@@ -87,7 +99,10 @@ export default {
             type: 'pie',
             radius: ['40%', '50%'],
             center: ['50%', '50%'],
-            data: data,
+            data: [{
+               name: this.profileData.zsdy + '人',
+               value: this.profileData.zsdy
+            }],
             label: {
               show: true,
               position: 'center'
@@ -101,7 +116,10 @@ export default {
             type: 'pie',
             radius: ['40%', '50%'],
             center: ['50%', '50%'],
-            data: data,
+            data: [{
+               name: this.profileData.ybdy + '人',
+               value: this.profileData.ybdy
+            }],
             label: {
               show: true,
               position: 'center'
@@ -117,9 +135,6 @@ export default {
       partyProfileChart = echarts.init(document.getElementById('partyProfileId'))
       partyProfileChart.setOption(option)
     }
-  },
-  mounted() {
-    this.createPartyProfileChart()
   }
 }
 </script>

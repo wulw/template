@@ -12,17 +12,30 @@ let partyBuildInfoChart = null
 export default {
   name: 'partyBuildInfo',
 
+  props: {
+    buildData: {
+      type: Object,
+      default: null
+    }
+  },
   data () {
     return {
 
+    }
+  },
+  watch: {
+    buildData(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.initEcharts()
+      }
     }
   },
   methods: {
     initEcharts() {
       let option = {
         title: {
-          text: 'Referer of a Website',
-          subtext: 'Fake Data',
+          text: '',
+          subtext: '',
           left: 'center'
         },
         tooltip: {
@@ -39,11 +52,10 @@ export default {
             type: 'pie',
             radius: '50%',
             data: [
-              { value: 1048, name: 'Search Engine' },
-              { value: 735, name: 'Direct' },
-              { value: 580, name: 'Email' },
-              { value: 484, name: 'Union Ads' },
-              { value: 300, name: 'Video Ads' }
+              { value: this.buildData.zcwj, name: '政策文件' },
+              { value: this.buildData.ldjh, name: '领导讲话' },
+              { value: this.buildData.dwzs, name: '党务知识' },
+              { value: this.buildData.djyw, name: '党建要闻' }
             ],
             emphasis: {
               itemStyle: {
@@ -61,7 +73,7 @@ export default {
     }
   },
   mounted() {
-    this.initEcharts()
+    this.initEcharts
     window.onresize = () => {
       partyBuildInfoChart.resize()
     }

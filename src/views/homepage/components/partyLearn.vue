@@ -5,30 +5,30 @@
         <div class="title">图文学习</div>
         <div class="content">
           <div class="count">
-            <span>{{ 1000 }}</span>
+            <span>{{ learnData.picture }}</span>
             <span>人</span>
           </div>
-          <div class="percentage">{{ '57%' }}</div>
+          <div class="percentage">{{ (learnData.picture / (learnData.picture + learnData.video)) * 100 }}%</div>
         </div>
       </div>
       <div class="flex-item">
         <div class="title">视频学习</div>
         <div class="content">
           <div class="count">
-            <span>{{ 1000 }}</span>
+            <span>{{ learnData.video }}</span>
             <span>人</span>
           </div>
-          <div class="percentage">{{ '57%' }}</div>
+          <div class="percentage">{{ (learnData.video / (learnData.picture + learnData.video)) * 100 }}%</div>
         </div>
       </div>
     </div>
     <div class="footer">
       <label>总评论：</label>
-      <span>12345</span>
+      <span>{{ learnData.see_number }}</span>
       <label>总点赞次数：</label>
-      <span>12345</span>
+      <span>{{ learnData.like_number }}</span>
       <label>总转发次数：</label>
-      <span>12345</span>
+      <span>{{ learnData.reprint_number }}</span>
     </div>
   </div>
 </template>
@@ -37,11 +37,24 @@
 export default {
   name: 'partyLearn',
 
+  props: {
+    learnData: {
+      type: Object,
+      default: null
+    }
+  },
   data () {
     return {
 
     }
   },
+  // watch: {
+  //   learnData(newVal, oldVal) {
+  //     if (newVal !== oldVal) {
+  //       this.initEcharts()
+  //     }
+  //   }
+  // },
   methods: {
 
   }

@@ -10,19 +10,19 @@
           <div class="title">
             <span>党员概况</span>
           </div>
-          <party-profile />
+          <party-profile :profileData="profileData"/>
         </div>
         <div class="middle-wrapper">
           <div class="title">
             <span>党员年龄分布</span>
           </div>
-          <party-age />
+          <party-age :ageData="ageData" />
         </div>
         <div class="bottom-wrapper">
           <div class="title">
             <span>党员性别分布</span>
           </div>
-          <party-gender />
+          <party-gender :genderData="genderData"/>
         </div>
       </div>
       <div class="flex-item-wrapper">
@@ -36,7 +36,7 @@
           <div class="title">
             <span>党建活动统计</span>
           </div>
-          <party-activity />
+          <party-activity :activityData="activityData"/>
         </div>
       </div>
       <div class="flex-item-wrapper">
@@ -44,13 +44,13 @@
           <div class="title">
             <span>党建资讯统计</span>
           </div>
-          <party-build-info />
+          <party-build-info :buildData="buildData"/>
         </div>
         <div class="bottom-wrapper">
           <div class="title">
             <span>党建学习统计</span>
           </div>
-          <party-learn />
+          <party-learn :learnData="learnData"/>
         </div>
       </div>
     </div>
@@ -65,6 +65,7 @@ import PartyAge from './components/partyAge.vue'
 import PartyBuildInfo from './components/partyBuildInfo.vue'
 import PartyGender from './components/partyGender.vue'
 import PartyLearn from './components/partyLearn.vue'
+import { getHomeList } from '@/api/home'
 
 export default {
   name: 'homepage',
@@ -80,8 +81,34 @@ export default {
   },
   data () {
     return {
-
+      ageData: [],
+      genderData: null,
+      profileData: null,
+      activityData: null,
+      buildData: null,
+      learnData: null
     }
+  },
+  methods: {
+    // 获取首页数据
+    getHomeList () {
+      getHomeList().then(res => {
+        if (res && res.code === 200) {
+          // this.ageData = res.data.age.map((item) => {
+          //     return item.count
+          // })
+          this.ageData = res.data.age || []
+          this.genderData = res.data.dysex
+          this.profileData = res.data.dygk
+          this.activityData = res.data.djhdtj
+          this.buildData = res.data.djzxtj
+          this.learnData = res.data.djxxtj
+        }
+      })
+    }
+  },
+  created() {
+    this.getHomeList()
   }
 }
 </script>
