@@ -18,9 +18,9 @@
       style="width: 100%">
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-      <el-table-column label="项目名称" prop="projectName" align="center"></el-table-column>
-      <el-table-column label="考试开始时间" prop="strDate" align="center"></el-table-column>
-      <el-table-column label="考试结束时间" prop="endDate" align="center"></el-table-column>
+      <el-table-column label="项目名称" prop="name" align="center"></el-table-column>
+      <el-table-column label="考试开始时间" prop="start_time" align="center"></el-table-column>
+      <el-table-column label="考试结束时间" prop="end_time" align="center"></el-table-column>
       <el-table-column label="状态" prop="status" align="center">
         <template slot-scope="scope">
           <span>{{ markStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
@@ -28,13 +28,13 @@
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="showOnlineExamView = true">进入</el-button>
+          <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="showOnlineExamView = true; onlineExamItem = scope.row">进入</el-button>
           <el-button v-else type="primary" size="small">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
-  <online-exam-view v-else @submit="showOnlineExamView = false" />
+  <online-exam-view v-else @submit="showOnlineExamView = false" :onlineExamItem="onlineExamItem" />
 </template>
 
 <script>
@@ -56,12 +56,13 @@ export default {
       },
       tableData: [
         {
-          status: 0
+          status: 1
         }
       ],
       tableLoading: false,
       queryLoading: false,
-      showOnlineExamView: false
+      showOnlineExamView: false,
+      onlineExamItem: null
     }
   },
   computed: {

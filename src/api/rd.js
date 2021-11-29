@@ -22,3 +22,12 @@ export function viewMarkExamList(params) {
     params
   })
 }
+
+// 阅卷
+export function markExamItemInfo(data) {
+  return request({
+    url: '/PartyBuildingApi/markingItemIdInfo',
+    method: 'post',
+    data
+  })
+}

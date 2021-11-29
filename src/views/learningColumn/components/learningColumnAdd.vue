@@ -75,11 +75,11 @@
       </el-row>
     </el-form>
     <div class="form-footer">
-      <el-button v-if="auditFlag && learningColumnItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
+      <el-button v-if="auditFlag && learningColumnItem && learningColumnItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
       <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
-      <el-button type="default" size="small" @click="cancel">{{ `${learningColumnItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
+      <el-button type="default" size="small" @click="cancel">{{ `${learningColumnItem && learningColumnItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
-    <audit-form :auditDialogVisible="auditDialogVisible" auditModule="learningColumn" :id="learningColumnItem.id" @close="auditDialogVisible = false" />
+    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="learningColumn" :id="learningColumnItem.id" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -216,7 +216,7 @@ export default {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
     if (this.learnColumnItem) {
-      this.learnColumnItem.file_video = JSON.parse(this.learnColumnItem.file_video || [])
+      this.learnColumnItem.file_video = JSON.parse(this.learnColumnItem.file_video || null) || []
       this.form = this.learnColumnItem
     }
   }

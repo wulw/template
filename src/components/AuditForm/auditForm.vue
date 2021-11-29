@@ -96,7 +96,8 @@ export default {
           this.submitLoading = true
           let params = {
             id: this.id,
-            user_id: this.userInfo.id
+            reviewer: this.userInfo.id,
+            reviewer_name: this.userInfo.real_name
           }
           if (this.auditModule === 'policyInfo') {
             try {

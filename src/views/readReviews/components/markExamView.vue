@@ -2,7 +2,7 @@
   <div class="mark-exam-view-wrapper">
     <div class="page-header">
       <el-button type="primary" size="small" @click="goBack">返回</el-button>
-      <el-button type="primary" size="small">提交</el-button>
+      <el-button type="primary" size="small" @click="submit">提交</el-button>
       <i class="el-icon-question"></i>
       <span>注意：请确定阅卷完成后再进行提交操作，一旦提交，则不可进行修改！</span>
     </div>
@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import { markExamItemInfo } from '@/api/rd'
+
 export default {
   name: 'markExamView',
 
@@ -121,6 +123,14 @@ export default {
   methods: {
     goBack () {
       this.$emit('goBack')
+    },
+    // 提交
+    submit () {
+      markExamItemInfo(JSON.stringify(this.answerList)).then(res => {
+        if (res && res.code === 200) {
+          this.$message.success(res.msg)
+        }
+      })
     }
   }
 }

@@ -27,8 +27,8 @@
                     </el-col>
                   </template>
                   <template v-else>  
-                    <el-col v-for="(val, key, i) in form.option" :span="24" :key="key">
-                      <el-form-item v-if="i < form.count" :label="`${key}.`">
+                    <el-col v-for="(val, key) in form.option" :span="24" :key="key">
+                      <el-form-item :label="`${key}.`">
                         <el-input v-model="form.option[key]" placeholder="请输入答案"></el-input>
                       </el-form-item>
                     </el-col>
@@ -69,93 +69,71 @@
 </template>
 
 <script>
-import { EventBus } from '@/utils/eventBus'
 import { questionMaintenanceAdd, questionMaintenanceList } from '@/api/oam'
 
 export default {
   name: 'questionMaintenance',
 
+  props: {
+    onlineExamItem: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       problemList: [
         {
           serial_number: '1',
-          problem: '',
+          problem: '花儿为什么这样红？',
           type: 1,
-          count: 2,
+          count: 3,
           option: {
-            'A': '',
-            'B': '',
-            'C': '',
-            'D': '',
-            'E': '',
-            'F': '',
-            'G': '',
-            'H': ''
+            'A': '就是这样红。',
+            'B': '应该这样红',
+            'C': '涂了红药水'
           },
-          answer: '',
-          score: ''
+          answer: 'A',
+          score: 5
         },
         {
           serial_number: '2',
-          problem: '',
+          problem: '0.26的计数单位是多少？',
           type: 2,
-          count: 2,
+          count: 3,
           option: {
-            'A': '',
-            'B': '',
-            'C': '',
-            'D': '',
-            'E': '',
-            'F': '',
-            'G': '',
-            'H': ''
+            'A': '0.1',
+            'B': '0.01',
+            'C': '0.001'
           },
-          answer: '',
-          score: ''
+          answer: ['A', 'B'],
+          score: 5
         },
         {
           serial_number: '3',
-          problem: '',
+          problem: '中国在哪个洲？',
           type: 3,
-          count: 2,
-          option: {
-            'A': '',
-            'B': '',
-            'C': '',
-            'D': '',
-            'E': '',
-            'F': '',
-            'G': '',
-            'H': ''
-          },
-          answer: '',
-          score: ''
+          answer: '亚洲',
+          score: 10
         }
-      ],
-      item_id: ''
+      ]
     }
   },
   methods: {
     goBack () {
-      EventBus.$emit('back', 'partyActivityManagement')
+      this.$emit('goBack')
     },
     handleChange (val) {
       // console.log(val)
-      // let problemObj = this.problemList.find(item => item.serial_number === val.serial_number)
-      // // let index = this.problemList.findIndex(item => item.serial_number === val.serial_number)
-      // if (Object.keys(problemObj.option).length > val.count) {
-      //   delete problemObj.option[Object.keys(problemObj.option)[val.count]]
-      // } else {
-      //   let list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-      //   problemObj.option[list[val.count - 1]] = ''
-      // }
-      // // this.$set(problemObj, 'option', problemObj.option)
-      // this.problemList.forEach((item, index) => {
-      //   if (item.serial_number === problemObj.serial_number) {
-      //     this.$set(item, 'option', problemObj.option)
-      //   }
-      // })
+      let problemObj = this.problemList.find(item => item.serial_number === val.serial_number)
+      if (Object.keys(problemObj.option).length > val.count) {
+        delete problemObj.option[Object.keys(problemObj.option)[val.count]]
+      } else {
+        let list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        let option = new Object()
+        option[list[val.count - 1]] = ''
+        problemObj.option = { ...problemObj.option, ...option }
+      }
     },
     addProblem (type) {
       // 单选题
@@ -171,16 +149,14 @@ export default {
         count: 2,
         option: {
           'A': '',
-          'B': '',
-          'C': '',
-          'D': '',
-          'E': '',
-          'F': '',
-          'G': '',
-          'H': ''
+          'B': ''
         },
         answer: '',
         score: ''
+      }
+      if (type === 3) {
+        delete obj.option
+        delete obj.count
       }
 
       this.problemList.splice(index, 0, obj)
@@ -191,7 +167,12 @@ export default {
     // 保存答卷
     saveQuestionExam () {
       console.log(this.problemList)
-      questionMaintenanceAdd(this.problemList).then(res => {
+      this.problemList = this.problemList.map(item => {
+        return { ...item, ...{ item_id: this.onlineExamItem.id } }
+      })
+      let formData = new FormData()
+      formData.append('data', JSON.stringify(this.problemList))
+      questionMaintenanceAdd(formData).then(res => {
         if (res && res.code === 200) {
           this.$message.success(res.msg)
           this.goBack()
@@ -201,19 +182,23 @@ export default {
     // 列表
     getQuestionMaintenanceList () {
       questionMaintenanceList({
-        item_id: this.item_id
+        item_id: this.onlineExamItem.id
       }).then(res => {
         if (res && res.code === 200) {
-          this.problemList = res.data || []
+          if (res.data.length) {
+            res.data.map(item => {
+              item.option = JSON.parse(item.option || null) || []
+              item.count = Object.keys(item.option).length
+            })
+            this.problemList = res.data
+            console.log(this.problemList)
+          }
         }
       })
     }
   },
   created() {
-    EventBus.$on('questionMaintenance', (id) => {
-      this.item_id = id
-      this.getQuestionMaintenanceList()
-    })
+    this.getQuestionMaintenanceList()
   }
 }
 </script>

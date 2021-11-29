@@ -84,11 +84,11 @@
       </el-row>
     </el-form>
     <div class="form-footer">
-      <el-button v-if="auditFlag" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
+      <el-button v-if="auditFlag && partyActivityItem && partyActivityItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
       <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
-      <el-button type="default" size="small" @click="cancel">{{ `${partyActivityItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
+      <el-button type="default" size="small" @click="cancel">{{ `${partyActivityItem && partyActivityItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
-    <audit-form :auditDialogVisible="auditDialogVisible" auditModule="partyActivity" :id="partyActivityItem.id" @close="auditDialogVisible = false" />
+    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="partyActivity" :id="partyActivityItem.id" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -238,8 +238,9 @@ export default {
   created() {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
+    console.log(this.userInfo.id)
     if (this.partyActivityItem) {
-      this.partyActivityItem.file_text = JSON.parse(this.partyActivityItem.file_text || [])
+      this.partyActivityItem.file_text = JSON.parse(this.partyActivityItem.file_text || null) || []
       this.form = this.partyActivityItem
     }
   }

@@ -55,8 +55,10 @@
               </el-tree>
             </div>
             <div class="flex-item">
-              <el-button type="primary" icon="el-icon-arrow-right" size="small" @click="leftClick"></el-button>
-              <el-button type="primary" icon="el-icon-arrow-left" size="small" @click="rightClick"></el-button>
+              <el-button type="primary" icon="el-icon-arrow-right" size="small" @click="rightClick"></el-button>
+              <el-button type="primary" icon="el-icon-arrow-left" size="small" @click="leftClick"></el-button>
+              <el-button type="primary" icon="el-icon-d-arrow-right" size="small" @click="rightAllClick"></el-button>
+              <el-button type="primary" icon="el-icon-d-arrow-left" size="small" @click="leftAllClick"></el-button>
             </div>
             <div class="flex-item">
               <p>已选择人员</p>
@@ -180,25 +182,38 @@ export default {
     handleRightCheckChange (node) {
 
     },
-    leftClick () {
+    rightClick () {
       this.data = this.$refs.leftTree.getCheckedNodes()
+      if (!this.data.length) {
+        return this.$message.info('请选择人员')
+      }
+      this.$nextTick(() => {
+        this.$refs.leftTree.getCheckedNodes().map(item => {
+          this.$refs.rightTree.setChecked(item.id, false)
+        })
+      })
+    },
+    leftClick () {
+      this.$refs.rightTree.getCheckedNodes().map((item) => {
+        this.$refs.leftTree.setChecked(item.id, false)
+        this.data.forEach((tree, index) => {
+          if (tree.id === item.id) {
+            this.data.splice(index, 1)
+          }
+        })
+      })
+    },
+    rightAllClick () {
+      this.$refs.leftTree.setCheckedNodes(this.$refs.leftTree.data)
       this.$nextTick(() => {
         this.$refs.leftTree.getCheckedNodes().map(item => {
           this.$refs.rightTree.setChecked(item.id, true)
         })
       })
     },
-    rightClick () {
-      let rightTreeList = [ ...this.data ]
-      rightTreeList.forEach((list, index) => {
-        this.$refs.rightTree.getCheckedNodes().map(item => {
-          if (list.id === item.id) {
-            rightTreeList.splice(index, 1)
-          }
-        })
-      })
-      console.log(rightTreeList)
-      rightTreeList.map(item => {
+    leftAllClick () {
+      this.data = []
+      this.$refs.leftTree.getCheckedNodes().map(item => {
         this.$refs.leftTree.setChecked(item.id, false)
       })
     },
@@ -267,7 +282,9 @@ export default {
         align-items: center;
         flex-direction: column;
         .el-button {
-          &:nth-child(2) {
+          &:nth-child(2),
+          &:nth-child(3),
+          &:nth-child(4) {
             margin: 16px 0 0 0;
           }
         }

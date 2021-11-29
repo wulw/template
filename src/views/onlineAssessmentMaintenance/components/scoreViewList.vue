@@ -49,7 +49,6 @@
 </template>
 
 <script>
-import { EventBus } from '@/utils/eventBus'
 import { queryscoreViewList } from '@/api/oam'
 
 const pagination = {
@@ -75,7 +74,7 @@ export default {
   },
   methods: {
     goBack () {
-      EventBus.$emit('back', 'partyActivityManagement')
+      this.$emit('goBack')
     },
     // 查看
     scoreViewDetails () {

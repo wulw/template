@@ -15,7 +15,7 @@ export function getOaList(params) {
 }
 
 // 查看详情
-export function onlineTestView(params) {
+export function onlineExamView(params) {
   return request({
     url: '/PartyBuildingApi/getItemUserIdInfo',
     method: 'get',
@@ -24,7 +24,7 @@ export function onlineTestView(params) {
 }
 
 // 答题
-export function onlineTestAnswer(data) {
+export function onlineExamAnswer(data) {
   return request({
     url: '/PartyBuildingApi/OnlineTestInfo',
     method: 'post',

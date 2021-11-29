@@ -63,11 +63,11 @@
       </el-row>
     </el-form>
     <div class="form-footer">
-      <el-button v-if="auditFlag && policyInfoItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
+      <el-button v-if="auditFlag && policyInfoItem && policyInfoItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
       <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
-      <el-button type="default" size="small" @click="cancel">{{ `${policyInfoItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
+      <el-button type="default" size="small" @click="cancel">{{ `${policyInfoItem && policyInfoItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
-    <audit-form :auditDialogVisible="auditDialogVisible" auditModule="policyInfo" :id="policyInfoItem.id" @close="auditDialogVisible = false" />
+    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="policyInfo" :id="policyInfoItem.id" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -195,6 +195,8 @@ export default {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
     if (this.policyInfoItem) {
+      this.policyInfoItem.file_picture = JSON.parse(this.policyInfoItem.file_video || null)
+      this.policyInfoItem.file_video = JSON.parse(this.policyInfoItem.file_video || null) || []
       this.form = this.policyInfoItem
     }
   }

@@ -99,7 +99,7 @@ export default {
 .sensitive-words-maintenance {
   padding: 16px;
   .el-tag + .el-tag {
-    margin-left: 10px;
+    margin-left: 16px;
   }
   .button-new-tag {
     margin-left: 10px;

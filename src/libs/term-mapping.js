@@ -104,14 +104,14 @@ export const topStatusList = [
 export const markStatusList = [
   {
     valueDesc: '未提交',
-    valueId: 0
+    valueId: 1
   },
   {
     valueDesc: '阅卷中',
-    valueId: 1
+    valueId: 2
   },{
     valueDesc: '阅卷已完成',
-    valueId: 2
+    valueId: 3
   }
 ]
 
@@ -119,10 +119,14 @@ export const markStatusList = [
 export const examStatusList = [
   {
     valueDesc: '未开始',
-    valueId: 0
+    valueId: 1
   },
   {
     valueDesc: '已开始',
-    valueId: 1
+    valueId: 2
+  },
+  {
+    valueDesc: '已结束',
+    valueId: 3
   }
 ]
