@@ -29,12 +29,12 @@
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
           <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="showOnlineExamView = true; onlineExamItem = scope.row">进入</el-button>
-          <el-button v-else type="primary" size="small">查看</el-button>
+          <el-button type="primary" size="small" @click="handleView(scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
-  <online-exam-view v-else @submit="showOnlineExamView = false" :onlineExamItem="onlineExamItem" />
+  <online-exam-view v-else @goBack="() => { showOnlineExamView = false; getOaList }" :onlineExamItem="onlineExamItem" />
 </template>
 
 <script>
@@ -85,9 +85,27 @@ export default {
         this.queryLoading = false
         this.tableLoading = false
         if (res && res.code === 200) {
-          // this.tableData = res.data || []
+          this.tableData = res.data || []
         } 
       })
+    },
+    handleView (row) {
+      if (row.status === 2) {
+        this.$confirm('阅卷尚未完成，不可查看试卷！', '系统提示', {
+          // confirmButtonText: '确定',
+          // cancelButtonText: '取消',
+          showConfirmButton: false,
+          showCancelButton: false,
+          type: 'warning'
+        }).then(() => {
+
+        }).catch(() => {
+
+        })
+      } else {
+        this.showOnlineExamView = true
+        this.onlineExamItem = row
+      }
     }
   },
   created() {

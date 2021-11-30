@@ -13,10 +13,14 @@
     <el-table v-loading="tableLoading" stripe fit :data="tableData" style="width: 100%">
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-      <el-table-column label="项目名称" prop="projectName" align="center"></el-table-column>
-      <el-table-column label="考试开始时间" prop="strDate" align="center"></el-table-column>
-      <el-table-column label="考试结束时间" prop="endDate" align="center"></el-table-column>
-      <el-table-column label="提交数量" prop="subCount" align="center"></el-table-column>
+      <el-table-column label="项目名称" prop="name" align="center"></el-table-column>
+      <el-table-column label="考试开始时间" prop="start_time" align="center"></el-table-column>
+      <el-table-column label="考试结束时间" prop="end_time" align="center"></el-table-column>
+      <el-table-column label="提交数量" align="center">
+        <template slot-scope="scope">
+          <span>{{ `${scope.row.quantity_p}/${scope.row.quantity}` }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="() => { showMarkExamList = true; readReviewItem = scope.row }">查看</el-button>

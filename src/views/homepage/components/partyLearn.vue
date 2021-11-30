@@ -1,5 +1,5 @@
 <template>
-  <div class="party-learn-wrapper">
+  <div class="party-learn-wrapper" v-if="learnData">
     <div class="flex-wrapper">
       <div class="flex-item">
         <div class="title">图文学习</div>

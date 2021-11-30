@@ -5,6 +5,8 @@
       <el-button type="primary" size="small" @click="submit">提交</el-button>
       <i class="el-icon-question"></i>
       <span>注意：请确定答卷完成后再进行提交操作，一旦提交，则不可进行修改！</span>
+      <strong>{{ onlineExamItem.name }}</strong>
+      <span v-if="onlineExamItem.status === 3" style="float: right">{{ `总分：${problemList.total}` }}</span>
     </div>
     <div class="content-wrapper">
       <template v-for="form in problemList">
@@ -20,14 +22,14 @@
                   </el-col>
                   <template v-if="form.type === 3">
                     <el-col :span="24">
-                      <el-form-item label="答案：">
-                        <el-input type="textarea" v-model="form.answer" placeholder="请输入答案"/>
+                      <el-form-item label="解答：">
+                        <el-input type="textarea" v-model="form.result" placeholder="请输入答案"/>
                       </el-form-item>
                     </el-col>
                   </template>
                   <template v-else-if="form.type === 1">  
                     <el-col :span="24">
-                        <el-radio-group v-model="form.answer">
+                        <el-radio-group v-model="form.result">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-radio :label="key">{{ `${key}. ${val}` }}</el-radio>
                           </el-form-item>
@@ -36,7 +38,7 @@
                   </template>
                   <template v-else>  
                     <el-col :span="24">
-                        <el-checkbox-group v-model="form.answer">
+                        <el-checkbox-group v-model="form.result">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-checkbox :label="key">{{ `${key}. ${val}` }}</el-checkbox>
                           </el-form-item>
@@ -47,10 +49,15 @@
               </el-col>
               <el-col :span="16">
                 <el-row>
-                  <el-col :span="12">
+                  <el-col :span="8">
                     <el-form-item label="分值：">
                       <span>{{ `${form.score}分` }}</span>
                       <!-- <el-input v-model.number="form.score" placeholder="请输入内容" readonly></el-input> -->
+                    </el-form-item>
+                  </el-col>
+                  <el-col v-if="onlineExamItem.status === 3" :span="16">
+                    <el-form-item label="得分：">
+                      <span>{{ `${form.score}分` }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -63,7 +70,8 @@
 </template>
 
 <script>
-import { onlineExamView } from '@/api/oa'
+import { onlineExamView, onlineExamAnswer } from '@/api/oa'
+import { formatTime } from '@/libs/utils'
 import Cookies from 'js-cookie'
 
 export default {
@@ -79,23 +87,22 @@ export default {
     return {
       problemList: [
         {
-          serial_number: '1',
+          serial_number: 1,
           problem: '花儿为什么这样红？',
           type: 1,
-          count: 3,
           option: {
             'A': '就是这样红。',
             'B': '应该这样红',
             'C': '涂了红药水'
           },
           answer: '',
-          score: 5
+          score: 5,
+          rules: {}
         },
         {
-          serial_number: '2',
+          serial_number: 2,
           problem: '0.26的计数单位是多少？',
           type: 2,
-          count: 3,
           option: {
             'A': '0.1',
             'B': '0.01',
@@ -105,7 +112,7 @@ export default {
           score: 5
         },
         {
-          serial_number: '3',
+          serial_number: 3,
           problem: '中国在哪个洲？',
           type: 3,
           answer: '亚洲',
@@ -120,8 +127,26 @@ export default {
     }
   },
   methods: {
+    // 答题提交
     submit () {
-      this.$emit('submit')
+      let answerList = this.problemList.map(item => {
+        return {
+          questions_id: item.id || item.serial_number,
+          answer: item.result
+        }
+      })
+      let formData = new FormData()
+      formData.append('answer_user_id', this.userInfo.id)
+      formData.append('answer_user_name', this.userInfo.real_name)
+      formData.append('completion_time', formatTime(new Date(), '-').date)
+      formData.append('item_id', this.onlineExamItem.id)
+      formData.append('answer', JSON.stringify(answerList))
+      onlineExamAnswer(formData).then(res => {
+        if (res && res.code === 200) {
+          this.$message.success(res.msg)
+          this.$emit('goBack')
+        }
+      })
     },
     getOnlineExamView () {
       let params = {
@@ -133,6 +158,7 @@ export default {
           if (res.data.length) {
             res.data.map(item => {
               item.option = JSON.parse(item.option)
+              item.result = item.type === 2 ? [] : ''
             })
             this.problemList = res.data
             console.log(this.problemList)

@@ -30,7 +30,7 @@
           <div class="title">
             <span>智慧校园党建分布</span>
           </div>
-          <baidu-map-wrapper />
+          <baidu-map-wrapper :baiduMapData="baiduMapData" />
         </div>
         <div class="bottom-wrapper">
           <div class="title">
@@ -86,7 +86,8 @@ export default {
       profileData: null,
       activityData: null,
       buildData: null,
-      learnData: null
+      learnData: null,
+      baiduMapData: []
     }
   },
   methods: {
@@ -103,6 +104,7 @@ export default {
           this.activityData = res.data.djhdtj
           this.buildData = res.data.djzxtj
           this.learnData = res.data.djxxtj
+          this.baiduMapData = res.data.fbt || []
         }
       })
     }

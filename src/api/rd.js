@@ -28,6 +28,9 @@ export function markExamItemInfo(data) {
   return request({
     url: '/PartyBuildingApi/markingItemIdInfo',
     method: 'post',
-    data
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }

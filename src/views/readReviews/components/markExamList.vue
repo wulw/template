@@ -19,14 +19,15 @@
       style="width: 100%">
       <!-- <el-table-column type="selection" width="50"></el-table-column> -->
       <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-      <el-table-column label="姓名" prop="name" align="center"></el-table-column>
-      <el-table-column label="提交时间" prop="strDate" align="center"></el-table-column>
-      <el-table-column label="选择题分数" prop="endDate" align="center"></el-table-column>
-      <el-table-column label="问答题分数" prop="subCount" align="center"></el-table-column>
-      <el-table-column label="总分" prop="subCount" align="center"></el-table-column>
+      <el-table-column label="姓名" prop="answer_user_name" align="center"></el-table-column>
+      <el-table-column label="提交时间" prop="completion_time" align="center"></el-table-column>
+      <el-table-column label="选择题分数" prop="xztfs" align="center"></el-table-column>
+      <el-table-column label="问答题分数" prop="wdtfs" align="center"></el-table-column>
+      <el-table-column label="总分" prop="total_score" align="center"></el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="() => { showMarkExamView = true; markExamItem = scope.row }">阅卷</el-button>
+          <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="() => { showMarkExamView = true; markExamItem = scope.row }">阅卷</el-button>
+          <el-button v-else type="primary" size="small" @click="() => { showMarkExamView = true; markExamItem = scope.row }">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -76,7 +77,7 @@ export default {
       },
       queryLoading: false,
       tableLoading: false,
-      tableData: [{}],
+      tableData: [],
       showMarkExamView: false,
       markExamItem: null
     }
@@ -107,7 +108,7 @@ export default {
       this.tableLoading = true
       viewMarkExamList({ ...params, ...this.pagination }).then(res => {
         if (res && res.code === 200) {
-          // this.tableData = res.data.data || []
+          this.tableData = res.data.data || []
           this.pagination.total = res.data.total
         }
         this.queryLoading = false

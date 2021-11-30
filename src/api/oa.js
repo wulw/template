@@ -28,6 +28,9 @@ export function onlineExamAnswer(data) {
   return request({
     url: '/PartyBuildingApi/OnlineTestInfo',
     method: 'post',
-    data
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
