@@ -76,10 +76,10 @@
     </el-form>
     <div class="form-footer">
       <el-button v-if="auditFlag && learningColumnItem && learningColumnItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
-      <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button v-else-if="learningColumnItem && learningColumnItem.status === 0" type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
       <el-button type="default" size="small" @click="cancel">{{ `${learningColumnItem && learningColumnItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
-    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="learningColumn" :id="learningColumnItem.id" @close="auditDialogVisible = false" />
+    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="learningColumn" :id="learningColumnItem.id" @notifyRefresh="auditNotifyRefresh" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -173,24 +173,30 @@ export default {
       this.$refs.addForm.validate(valid => {
         if (valid) {
           this.submitLoading = true
-          if (this.partyActivityItem) {
-            learningColumnModify(this.form).then(res => {
+          let formData = new FormData()
+          for (let key in this.form) {
+            if (key === 'file_video') {
+              formData.append(key, JSON.stringify(this.form[key]))
+            } else {
+              formData.append(key, this.form[key])
+            }
+          }
+          if (this.learningColumnItem) {
+            learningColumnModify(formData).then(res => {
               if (res && res.code === 200) {
+                this.$message.success(res.msg)
                 this.submitLoading = false
+                this.$emit('notifyRefresh')
+                this.cancel()
               }
             })
           } else {
-            let formData = new FormData()
-            for (let key in this.form) {
-              if (key === 'file_video') {
-                formData.append(key, JSON.stringify(this.form[key]))
-              } else {
-                formData.append(key, this.form[key])
-              }
-            }
             learningColumnAdd(formData).then(res => {
               if (res && res.code === 200) {
+                this.$message.success(res.msg)
                 this.submitLoading = false
+                this.$emit('notifyRefresh')
+                this.cancel()
               }
             })
           }
@@ -210,14 +216,18 @@ export default {
     uploadVideoSuccess (params) {
       this.form.file_video.push(params)
       params && this.$refs.addForm.clearValidate(['file_video'])
+    },
+    auditNotifyRefresh () {
+      this.$emit('notifyRefresh')
+      this.cancel()
     }
   },
   created() {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
-    if (this.learnColumnItem) {
-      this.learnColumnItem.file_video = JSON.parse(this.learnColumnItem.file_video || null) || []
-      this.form = this.learnColumnItem
+    if (this.learningColumnItem) {
+      this.learningColumnItem.file_video = JSON.parse(this.learningColumnItem.file_video || null) || []
+      this.form = this.learningColumnItem
     }
   }
 }

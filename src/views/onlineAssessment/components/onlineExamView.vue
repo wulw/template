@@ -6,7 +6,7 @@
       <i class="el-icon-question"></i>
       <span>注意：请确定答卷完成后再进行提交操作，一旦提交，则不可进行修改！</span>
       <strong>{{ onlineExamItem.name }}</strong>
-      <span v-if="onlineExamItem.status === 3" style="float: right">{{ `总分：${problemList.total}` }}</span>
+      <span v-if="onlineExamItem.status === 3" style="float: right">{{ `总分：${totalScore}分` }}</span>
     </div>
     <div class="content-wrapper">
       <template v-for="form in problemList">
@@ -85,40 +85,9 @@ export default {
   },
   data () {
     return {
-      problemList: [
-        {
-          serial_number: 1,
-          problem: '花儿为什么这样红？',
-          type: 1,
-          option: {
-            'A': '就是这样红。',
-            'B': '应该这样红',
-            'C': '涂了红药水'
-          },
-          answer: '',
-          score: 5,
-          rules: {}
-        },
-        {
-          serial_number: 2,
-          problem: '0.26的计数单位是多少？',
-          type: 2,
-          option: {
-            'A': '0.1',
-            'B': '0.01',
-            'C': '0.001'
-          },
-          answer: [],
-          score: 5
-        },
-        {
-          serial_number: 3,
-          problem: '中国在哪个洲？',
-          type: 3,
-          answer: '亚洲',
-          score: 10
-        }
-      ],
+      problemList: [],
+      totalScore: 0,
+      startTime: 0, // 开始答卷时间
     }
   },
   computed: {
@@ -129,6 +98,8 @@ export default {
   methods: {
     // 答题提交
     submit () {
+      let time = parseInt(((Date.now() - this.startTime)/60000).toFixed())
+      console.log(time)
       let answerList = this.problemList.map(item => {
         return {
           questions_id: item.id || item.serial_number,
@@ -141,10 +112,12 @@ export default {
       formData.append('completion_time', formatTime(new Date(), '-').date)
       formData.append('item_id', this.onlineExamItem.id)
       formData.append('answer', JSON.stringify(answerList))
+      formData.append('answer_time', time)
       onlineExamAnswer(formData).then(res => {
         if (res && res.code === 200) {
           this.$message.success(res.msg)
           this.$emit('goBack')
+          this.$emit('notifyRefresh')
         }
       })
     },
@@ -162,6 +135,13 @@ export default {
             })
             this.problemList = res.data
             console.log(this.problemList)
+          } else if (typeof res.data === 'object') {
+            res.data.questions.map(item => {
+              item.option = JSON.parse(item.option)
+              item.result = item.answer
+            })
+            this.problemList = res.data.questions
+            this.totalScore = res.data.total_score
           }
         }
       })
@@ -169,6 +149,7 @@ export default {
   },
   created () {
     this.getOnlineExamView()
+    this.startTime = Date.now()
   }
 }
 </script>

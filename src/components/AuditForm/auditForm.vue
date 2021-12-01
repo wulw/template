@@ -105,7 +105,7 @@ export default {
                 if (res && res.code === 200) {
                   this.$message.success(res.msg)
                   this.cancel()
-                  EventBus.$emit('notifyRefresh')
+                  this.$emit('notifyRefresh')
                 }
                 this.submitLoading = false
               })
@@ -119,7 +119,7 @@ export default {
                 if (res && res.code === 200) {
                   this.$message.success(res.msg)
                   this.cancel()
-                  EventBus.$emit('notifyRefresh')
+                  this.$emit('notifyRefresh')
                 }
                 this.submitLoading = false
               })
@@ -133,7 +133,7 @@ export default {
                 if (res && res.code === 200) {
                   this.$message.success(res.msg)
                   this.cancel()
-                  EventBus.$emit('notifyRefresh')
+                  this.$emit('notifyRefresh')
                 }
                 this.submitLoading = false
               })

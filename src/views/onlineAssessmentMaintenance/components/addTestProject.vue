@@ -15,6 +15,7 @@
             <el-date-picker
               style="width: 100%"
               v-model="form.start_time"
+              :picker-options="pickerOptions"
               format="yyyy-MM-dd HH:mm:ss"
               value-format="yyyy-MM-dd HH:mm:ss"
               type="datetime"
@@ -27,6 +28,7 @@
             <el-date-picker
               style="width: 100%"
               v-model="form.end_time"
+              :picker-options="pickerOptions"
               format="yyyy-MM-dd HH:mm:ss"
               value-format="yyyy-MM-dd HH:mm:ss"
               type="datetime"
@@ -118,12 +120,19 @@ export default {
           { required: true, message: '成员必填', trigger: 'change' }
         ]
       },
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now()
+        }
+      },
+      pickerEndOptions: {},
       submitLoading: false,
       props: {
         label: 'party_name',
         children: 'children',
         isLeaf: 'leaf'
       },
+      leftTreeData: [],
       data: []
     }
   },
@@ -131,6 +140,15 @@ export default {
     userInfo() {
       return JSON.parse(Cookies.get('user') || null)
     }
+  },
+  watch: {
+    // 'form.start_time'(val) {
+    //   this.pickerEndOptions = {
+    //     disabledDate(time) {
+    //       return time.getTime() < new Date(val).getTime()
+    //     }
+    //   }
+    // }
   },
   methods: {
     loadNode (node, resolve) {
@@ -166,6 +184,7 @@ export default {
               res.data.data = res.data.data.map(item => {
                 return { ...item, ...{ leaf: true } }
               })
+              this.leftTreeData = this.leftTreeData.concat(res.data.data)
               resolve(res.data.data)
             } else {
               resolve([])
@@ -204,7 +223,8 @@ export default {
       })
     },
     rightAllClick () {
-      this.$refs.leftTree.setCheckedNodes(this.$refs.leftTree.data)
+      this.$refs.leftTree.setCheckedNodes(this.leftTreeData)
+      this.data = JSON.parse(JSON.stringify(this.leftTreeData))
       this.$nextTick(() => {
         this.$refs.leftTree.getCheckedNodes().map(item => {
           this.$refs.rightTree.setChecked(item.id, true)
@@ -222,11 +242,11 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.submitLoading = true
-          this.form.member = this.$refs.rightTree.getCheckedNodes().map(item => item.id).join(',')
+          this.form.member = this.data.map(item => item.user_id).join(',')  // this.$refs.rightTree.getCheckedNodes()
           let params = {
             user_id: this.userInfo.id,
             user_name: this.userInfo.real_name,
-            quantity: this.$refs.rightTree.getCheckedNodes().map(item => item.id).length
+            quantity: this.data.map(item => item.user_id).length // this.$refs.rightTree.getCheckedNodes()
           }
           testProjectAdd({ ...this.form, ...params }).then(res => {
             if (res && res.code === 200) {

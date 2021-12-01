@@ -10,12 +10,12 @@
       </div>
       <div class="flex-item">
         <template v-for="(form, index) in problemList">
-          <el-form :model="form" size="small" inline label-width="120px" :key="form.serial_number = (index+1)">
+          <el-form ref="ruleForm" :model="form" :rules="rules" size="small" inline label-width="120px" :key="form.serial_number = (index+1)">
             <el-row>
               <el-col :span="8">
                 <el-row>
                   <el-col :span="24">
-                    <el-form-item :label="`问题${form.serial_number}：`">
+                    <el-form-item :label="`问题${form.serial_number}：`" prop="problem">
                       <el-input v-model="form.problem" placeholder="请输入内容"></el-input>
                     </el-form-item>
                   </el-col>
@@ -28,7 +28,7 @@
                   </template>
                   <template v-else>  
                     <el-col v-for="(val, key) in form.option" :span="24" :key="key">
-                      <el-form-item :label="`${key}.`">
+                      <el-form-item :label="`${key}.`" prop="option">
                         <el-input v-model="form.option[key]" placeholder="请输入答案"></el-input>
                       </el-form-item>
                     </el-col>
@@ -50,8 +50,8 @@
                 </el-row>
                 <el-row>
                   <el-col v-if="form.type !== 3" :span="12" :offset="12">
-                    <el-form-item label="正确选项：">
-                      <el-select :multiple="form.type !== 1" v-model="form.answer">
+                    <el-form-item label="正确选项：" prop="answer">
+                      <el-select :multiple="form.type !== 1" v-model="form.answer" clearable>
                         <el-option v-for="(val, key) in form.option" :key="key" :label="key" :value="key"></el-option>
                       </el-select>
                     </el-form-item>
@@ -115,8 +115,52 @@ export default {
           type: 3,
           answer: '亚洲',
           score: 10
-        }
-      ]
+        },
+        // {
+        //   serial_number: '',
+        //   problem: '',
+        //   type: 1,
+        //   count: 3,
+        //   option: {
+        //     'A': '',
+        //     'B': '',
+        //     'C': ''
+        //   },
+        //   answer: '',
+        //   score: ''
+        // },
+        // {
+        //   serial_number: '',
+        //   problem: '',
+        //   type: 2,
+        //   count: 3,
+        //   option: {
+        //     'A': '',
+        //     'B': '',
+        //     'C': ''
+        //   },
+        //   answer: [],
+        //   score: ''
+        // },
+        // {
+        //   serial_number: '',
+        //   problem: '',
+        //   type: 3,
+        //   answer: '',
+        //   score: ''
+        // }
+      ],
+      rules: {
+        problem: [
+          { required: true, message: '问题必填', trigger: 'blur' }
+        ],
+        option: [
+          { required: true, message: '答案选项必填', trigger: 'blur' }
+        ],
+        answer: [
+          { required: true, message: '答案必填', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
@@ -166,6 +210,14 @@ export default {
     },
     // 保存答卷
     saveQuestionExam () {
+      // this.$refs.ruleForm.validate(valid => {
+      //   if (valid) {
+
+      //   } else {
+
+      //   }
+      // })
+      // return
       console.log(this.problemList)
       this.problemList = this.problemList.map(item => {
         return { ...item, ...{ item_id: this.onlineExamItem.id } }

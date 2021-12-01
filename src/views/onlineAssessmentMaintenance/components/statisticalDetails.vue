@@ -20,7 +20,7 @@
         fit 
         :data="tableData" 
         style="width: 100%">
-        <el-table-column label="姓名" prop="name" align="center"></el-table-column>
+        <el-table-column label="姓名" prop="user_name" align="center"></el-table-column>
         <el-table-column label="答案" prop="answer" align="center" show-overflow-tooltip></el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -36,11 +36,16 @@
       >
       </el-pagination>
     </div>
+    <div class="dialog-footer">
+      <el-button type="default" size="small" @click="close">关 闭</el-button>
+    </div>
   </el-dialog>  
 </template>
 
 <script>
+import { getItemUserAnswer } from '@/api/oam'
 
+// 分页
 const pagination = {
   page: 1,
   pageSize: 10,
@@ -54,6 +59,10 @@ export default {
     detailsDialogVisible: {
       type: Boolean,
       default: false
+    },
+    answerDetailsItem: {
+      type: Object,
+      default: () => {}
     }
   },
   data () {
@@ -78,6 +87,14 @@ export default {
     },
     getAnswerInfoList () {
       this.tableLoading = true
+      getItemUserAnswer({ ...this.answerDetailsItem, ...this.pagination }).then(res => {
+        if (res && res.code === 200) {
+          // console.log(res.data)
+          this.tableData = res.data.data || []
+          this.pagination.total = res.data.total
+          this.tableLoading = false
+        }
+      })
     }
   },
   created() {
@@ -100,10 +117,13 @@ export default {
     }
   }
   .dialog-content {
-    margin-top: 16px;
+    margin: 16px 0;
   }
   .el-dialog__body {
     padding: 16px;
+    .dialog-footer {
+      text-align: right;
+    }
   }
 }
 </style>

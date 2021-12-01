@@ -3,10 +3,10 @@
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
-        <el-input v-model="filterForm.name" placeholder="活动名称"></el-input>
+        <el-input v-model="filterForm.name" placeholder="活动名称" clearable @keydown.enter.native="querySearch"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="filterForm.type" placeholder="请选择活动类型">
+        <el-select v-model="filterForm.type" placeholder="请选择活动类型" clearable @change="querySearch">
           <el-option v-for="item in activityTypeList" :key="item.valueId" :label="item.valueDesc" :value="item.valueId"></el-option>
         </el-select>
       </el-form-item>
@@ -17,11 +17,13 @@
           format="yyyy-MM-dd"
           value-format="yyyy-MM-dd"
           type="date"
-          placeholder="选择时间">
+          placeholder="选择时间"
+          clearable
+          @change="querySearch">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="filterForm.status" placeholder="请选择审核状态">
+        <el-select v-model="filterForm.status" placeholder="请选择审核状态" clearable @change="querySearch">
           <el-option v-for="item in auditStatusList" :key="item.valueId" :label="item.valueDesc" :value="item.valueId"></el-option>
         </el-select>
       </el-form-item>
@@ -62,7 +64,7 @@
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
           <template v-if="auditFlag">
-            <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
+            <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
           </template>
           <template v-else>
             <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>

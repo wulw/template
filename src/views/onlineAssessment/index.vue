@@ -6,7 +6,7 @@
         <el-input v-model="filterForm.name" placeholder="项目名称"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleQuery" :loading="queryLoading">查询</el-button>
+        <el-button type="primary" @click="querySearch" :loading="queryLoading">查询</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -34,7 +34,7 @@
       </el-table-column>
     </el-table>
   </div>
-  <online-exam-view v-else @goBack="() => { showOnlineExamView = false; getOaList }" :onlineExamItem="onlineExamItem" />
+  <online-exam-view v-else @goBack="showOnlineExamView = false" @notifyRefresh="getOaList" :onlineExamItem="onlineExamItem" />
 </template>
 
 <script>
@@ -72,7 +72,7 @@ export default {
   },
   methods: {
      // 查询
-    handleQuery () {
+    querySearch () {
       this.queryLoading = true
       this.getOaList()
     },
@@ -103,8 +103,8 @@ export default {
 
         })
       } else {
-        this.showOnlineExamView = true
         this.onlineExamItem = row
+        this.showOnlineExamView = true
       }
     }
   },

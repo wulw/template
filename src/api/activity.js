@@ -26,7 +26,7 @@ export function partyActivityAdd(data) {
 // 修改
 export function partyActivityModify(data) {
   return request({
-    url: `/PartyBuildingApi/PartyActivities/${data.id}`,
+    url: `/PartyBuildingApi/PartyActivities/${data.get('id')}`,
     method: 'put',
     data
   })

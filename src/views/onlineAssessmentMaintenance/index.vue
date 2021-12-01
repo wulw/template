@@ -38,9 +38,9 @@
       </el-table-column>
       <el-table-column label="操作" width="360" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.is_star !== 1" type="primary" size="small" @click="showModule = 'questionMaintenance'; onlineExamItem = scope.row">问卷维护</el-button>
-          <el-button type="primary" size="small" @click="showModule = 'scoreViewList'; onlineExamItem = scope.row">成绩查看</el-button>
-          <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'answerStatistical' }">统计</el-button>
+          <el-button v-if="scope.row.is_star === 1" type="primary" size="small" @click="showModule = 'questionMaintenance'; onlineExamItem = scope.row">问卷维护</el-button>
+          <el-button v-else type="primary" size="small" @click="showModule = 'scoreViewList'; onlineExamItem = scope.row">成绩查看</el-button>
+          <el-button v-if="scope.row.is_star === 3" type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'answerStatistical'; onlineExamItem = scope.row }">统计</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -66,7 +66,7 @@
       :visible.sync="dialogVisible"
     >
       <add-test-project v-if="dialogVisible && dialogTag === 'addTestProject'" @close="dialogVisible = false" @notifyRefresh="getOamList" />
-      <answer-statistical v-if="dialogVisible && dialogTag === 'answerStatistical'" @close="dialogVisible = false" />
+      <answer-statistical v-if="dialogVisible && dialogTag === 'answerStatistical'" :onlineExamItem="onlineExamItem" @close="dialogVisible = false" />
     </el-dialog>
   </div>
   <question-maintenance v-else-if="showModule === 'questionMaintenance'" :onlineExamItem="onlineExamItem" @goBack="showModule = 'onlineAssessmentMaintenance'" />

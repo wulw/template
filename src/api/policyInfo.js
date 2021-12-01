@@ -26,7 +26,7 @@ export function policyInfoAdd(data) {
 // 修改
 export function policyInfoModify(data) {
   return request({
-    url: `/PartyBuildingApi/PolicyInformation/${data.id}`,
+    url: `/PartyBuildingApi/PolicyInformation/${data.get('id')}`,
     method: 'put',
     data
   })

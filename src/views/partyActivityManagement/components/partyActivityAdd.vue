@@ -85,10 +85,10 @@
     </el-form>
     <div class="form-footer">
       <el-button v-if="auditFlag && partyActivityItem && partyActivityItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
-      <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button v-else-if="partyActivityItem && partyActivityItem.status === 0" type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
       <el-button type="default" size="small" @click="cancel">{{ `${partyActivityItem && partyActivityItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
-    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="partyActivity" :id="partyActivityItem.id" @close="auditDialogVisible = false" />
+    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="partyActivity" :id="partyActivityItem.id" @notifyRefresh="auditNotifyRefresh" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -189,8 +189,16 @@ export default {
       this.$refs.addForm.validate(valid => {
         if (valid) {
           this.submitLoading = true
+          let formData = new FormData()
+          for (let key in this.form) {
+            if (key === 'file_text') {
+              formData.append(key, JSON.stringify(this.form[key]))
+            } else {
+              formData.append(key, this.form[key])
+            }
+          }
           if (this.partyActivityItem) {
-            partyActivityModify(this.form).then(res => {
+            partyActivityModify(formData).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false
                 this.$message.success(res.msg)
@@ -199,14 +207,6 @@ export default {
               }
             })
           } else {
-            let formData = new FormData()
-            for (let key in this.form) {
-              if (key === 'file_text') {
-                formData.append(key, JSON.stringify(this.form[key]))
-              } else {
-                formData.append(key, this.form[key])
-              }
-            }
             partyActivityAdd(formData).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false
@@ -233,6 +233,10 @@ export default {
     uploadTextSuccess (params) {
       this.form.file_text.push(params)
       params && this.$refs.addForm.clearValidate(['file_text'])
+    },
+    auditNotifyRefresh () {
+      this.$emit('notifyRefresh')
+      this.cancel()
     }
   },
   created() {

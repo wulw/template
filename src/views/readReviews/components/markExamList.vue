@@ -45,7 +45,7 @@
     >
     </el-pagination>
   </div>
-  <mark-exam-view v-else :markExamItem="markExamItem" @goBack="showMarkExamView = false" />
+  <mark-exam-view v-else :markExamItem="markExamItem" @goBack="showMarkExamView = false" @notifyRefresh="getMarkExamList" />
 </template>
 
 <script>

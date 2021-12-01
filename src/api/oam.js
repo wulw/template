@@ -54,9 +54,22 @@ export function questionMaintenanceList(params) {
 
 // 统计
 // 列表
+export function getStatisticsOnline(params) {
+  return request({
+    url: '/PartyBuildingApi/getStatisticsOnline',
+    method: 'get',
+    params
+  })
+}
 
 // 问题选项查询
-
+export function getItemUserAnswer(params) {
+  return request({
+    url: '/PartyBuildingApi/itemUserAnswer',
+    method: 'get',
+    params
+  })
+}
 
 // 成绩查看
 // 列表

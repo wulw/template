@@ -25,8 +25,9 @@ export function learningColumnAdd(data) {
 
 // 修改
 export function learningColumnModify(data) {
+  console.log(data)
   return request({
-    url: '/PartyBuildingApi/LearningColumn',
+    url: `/PartyBuildingApi/LearningColumn/${data.get('id')}`,
     method: 'put',
     data
   })
@@ -45,6 +46,15 @@ export function learningColumnDel(data) {
 export function learningColumnAudit(data) {
   return request({
     url: '/PartyBuildingApi/examineLearningColumn',
+    method: 'post',
+    data
+  })
+}
+
+// 置顶/取消置顶
+export function learningColumnTop(data) {
+  return request({
+    url: '/PartyBuildingApi/learningColumnColumn',
     method: 'post',
     data
   })

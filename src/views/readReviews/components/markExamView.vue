@@ -57,7 +57,8 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="得分：">
-                      <el-input-number v-model="form.answer.defen" controls-position="right" :min="0" :max="15"></el-input-number>
+                      <el-input-number v-if="form.type === 3" v-model="form.answer.defen" controls-position="right" :min="0" :max="15"></el-input-number>
+                      <span v-else>{{ form.answer.defen }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -92,18 +93,21 @@ export default {
     // 提交
     submit () {
       let scoreList = this.answerList.map(item => {
-        return {
-          id: item.answer.id,
-          defen: item.answer.defen
+        if (item.type === 3) {
+          return {
+            id: item.answer.id,
+            defen: item.answer.defen
+          }
         }
       })
       let formData = new FormData()
-      formData.append('info_id', this.markExamItem.item_id)
+      formData.append('info_id', this.markExamItem.id)
       formData.append('fraction', JSON.stringify(scoreList))
       markExamItemInfo(formData).then(res => {
         if (res && res.code === 200) {
           this.$message.success(res.msg)
           this.goBack()
+          this.$emit('notifyRefresh')
         }
       })
     }

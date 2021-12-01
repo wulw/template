@@ -3,10 +3,10 @@
     <!-- 筛选 -->
     <el-form :model="filterForm" :inline="true" size="small">
       <el-form-item>
-        <el-input v-model="filterForm.name" placeholder="文章标题/发布人"></el-input>
+        <el-input v-model="filterForm.name" placeholder="文章标题/发布人" clearable @keydown.enter.native="querySearch"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="filterForm.type" placeholder="请选择资讯类型">
+        <el-select v-model="filterForm.type" placeholder="请选择资讯类型" clearable @change="querySearch">
           <el-option v-for="item in informationTypeList" :key="item.valueId" :label="item.valueDesc" :value="item.valueId"></el-option>
         </el-select>
       </el-form-item>
@@ -17,11 +17,13 @@
           type="date"
           format="yyyy-MM-dd"
           value-format="yyyy-MM-dd"
-          placeholder="选择时间">
+          placeholder="选择时间"
+          clearable
+          @change="querySearch">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="filterForm.status" placeholder="请选择审核状态">
+        <el-select v-model="filterForm.status" placeholder="请选择审核状态" clearable @change="querySearch">
           <el-option v-for="item in auditStatusList" :key="item.valueId" :label="item.valueDesc" :value="item.valueId"></el-option>
         </el-select>
       </el-form-item>
@@ -65,7 +67,7 @@
           </template>
           <template v-else>
             <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <template v-else>
+            <template v-else-if="scope.row.status === 1">
               <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
               <el-button v-else-if="scope.row.is_top === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
             </template>

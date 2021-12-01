@@ -5,12 +5,12 @@
     </div>
     <div class="dialog-body">
       <div class="total">
-        <span>浏览量：{{ total.viewCount }}</span>
-        <span>回收量：{{ total.recycleCount }}</span>
-        <span>平均作答时间：{{ total.AverageResponseTime }}</span>
+        <span>浏览量：{{ total.quantity }}</span>
+        <span>回收量：{{ total.questions_p }}</span>
+        <span>平均作答时间：{{ total.answer_time_avg }}</span>
       </div>
       <div class="content-wrapper">
-        <template v-for="(form, index) in problemList">
+        <template v-for="(form, index) in total.questions">
           <el-form :model="form" size="small" label-width="120px" :key="index + 1">
             <el-row>
               <el-col :span="24">
@@ -19,7 +19,7 @@
                     <el-form-item :label="`问题${index + 1}：`">
                       <!-- <el-input v-model="form.problem" placeholder="请输入内容"></el-input> -->
                       <span>{{ form.problem }}</span>
-                      <el-button v-if="form.type === 3" type="text" @click="viewDetails(form.id)">详情</el-button>
+                      <el-button v-if="form.type === 3" type="text" @click="viewDetails(form, key)">详情</el-button>
                     </el-form-item>
                   </el-col>
                   <!-- <template v-if="form.type === 3">
@@ -29,16 +29,16 @@
                       </el-form-item>
                     </el-col>
                   </template> -->
-                  <template v-if="form.type === 1">  
+                  <!-- <template v-if="form.type === 1">   -->
                     <el-col :span="24">
-                      <el-form-item class="answer" label-width="88px" v-for="val, key in form.option" :key="key">
+                      <el-form-item class="answer" label-width="88px" v-for="(val, key, i) in form.option" :key="key">
                         <span :title="`${key}. ${val}`">{{ `${key}. ${val}` }}</span>
-                        <span>答题人数3-答题半分比30%</span>
-                        <el-button type="text">详情</el-button>
+                        <span>{{ `答题人数${form.count[i].count}-答题百分比${form.totalCount ? (form.count[i].count/form.totalCount)*100 : 0}%` }}</span>
+                        <el-button type="text" @click="viewDetails(form, key)">详情</el-button>
                       </el-form-item>
                     </el-col>
-                  </template>
-                  <template v-else>  
+                  <!-- </template>
+                  <template v-else>
                     <el-col :span="24">
                       <el-form-item class="answer" label-width="88px" v-for="val, key in form.option" :key="key">
                         <span>{{ `${key}. ${val}` }}</span>
@@ -46,7 +46,7 @@
                         <el-button type="text">详情</el-button>
                       </el-form-item>
                     </el-col>
-                  </template>
+                  </template> -->
                 </el-row> 
               </el-col>
             </el-row> 
@@ -58,24 +58,31 @@
       <el-button type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
       <el-button type="default" size="small" @click="cancel">取 消</el-button>
     </div>
-    <statistical-details :detailsDialogVisible="detailsDialogVisible" @close="detailsDialogVisible = false" />
+    <statistical-details v-if="detailsDialogVisible" :detailsDialogVisible="detailsDialogVisible" :answerDetailsItem="answerDetailsItem" @close="detailsDialogVisible = false" />
   </div>
 </template>
 
 <script>
 import statisticalDetails from './statisticalDetails.vue'
+import { getStatisticsOnline } from '@/api/oam'
 
 export default {
   name: 'scoreView',
 
+  props: {
+    onlineExamItem: {
+      type: Object,
+      default: () => {}
+    }
+  },
   components: { statisticalDetails },
   data () {
     return {
       submitLoading: false,
       total: {
-        viewCount: 16,
-        recycleCount: 10,
-        AverageResponseTime: 15
+        quantity: 16,
+        questions: [],
+        questions_p: 15
       },
       problemList: [
         {
@@ -110,7 +117,8 @@ export default {
           score: 10
         }
       ],
-      detailsDialogVisible: false
+      detailsDialogVisible: false,
+      answerDetailsItem: null
     }
   },
   methods: {
@@ -121,9 +129,37 @@ export default {
       this.$emit('close')
     },
     // 详情
-    viewDetails (id) {
+    viewDetails (item, key) {
+      this.answerDetailsItem = {
+        item_id: this.onlineExamItem.id,
+        questions_id: item.id,
+        answer: key,
+        type: item.type
+      }
       this.detailsDialogVisible = true
+    },
+    getStatisticsOnline () {
+      getStatisticsOnline({
+        item_id: this.onlineExamItem.id
+      }).then(res => {
+        if (res && res.code === 200) {
+          console.log(res.data)
+          if (res.data && res.data.questions.length) { 
+            res.data.questions.map(item => {
+              item.option = JSON.parse(item.option)
+              item.totalCount = 0
+              item.count.map(list => {
+                item.totalCount += list.count
+              })
+            })
+          }
+          this.total = res.data
+        }
+      })
     }
+  },
+  created() {
+    this.getStatisticsOnline()
   }
 }
 </script>

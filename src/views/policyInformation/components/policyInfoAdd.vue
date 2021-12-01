@@ -64,10 +64,10 @@
     </el-form>
     <div class="form-footer">
       <el-button v-if="auditFlag && policyInfoItem && policyInfoItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
-      <el-button v-else type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button v-else-if="policyInfoItem && policyInfoItem.status === 0" type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
       <el-button type="default" size="small" @click="cancel">{{ `${policyInfoItem && policyInfoItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
-    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="policyInfo" :id="policyInfoItem.id" @close="auditDialogVisible = false" />
+    <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="policyInfo" :id="policyInfoItem.id" @notifyRefresh="auditNotifyRefresh" @close="auditDialogVisible = false" />
   </div>
 </template>
 
@@ -155,8 +155,12 @@ export default {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
           this.submitLoading = true
+          let formData = new FormData()
+          for (let key in this.form) {
+            formData.append(key, this.form[key])
+          }
           if (this.policyInfoItem) {
-            policyInfoModify(this.form).then(res => {
+            policyInfoModify(formData).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false
                 this.$message.success(res.msg)
@@ -165,10 +169,6 @@ export default {
               }
             })
           } else {
-            let formData = new FormData()
-            for (let key in this.form) {
-              formData.append(key, this.form[key])
-            }
             policyInfoAdd(formData).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false
@@ -189,6 +189,10 @@ export default {
     uploadSuccess (params) {
       this.form.file_picture = params.path
       params && this.$refs.addForm.clearValidate(['file_picture'])
+    },
+    auditNotifyRefresh () {
+      this.$emit('notifyRefresh')
+      this.cancel()
     }
   },
   created() {
