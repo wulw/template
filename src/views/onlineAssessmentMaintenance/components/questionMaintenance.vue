@@ -10,26 +10,26 @@
       </div>
       <div class="flex-item">
         <template v-for="(form, index) in problemList">
-          <el-form ref="ruleForm" :model="form" :rules="rules" size="small" inline label-width="120px" :key="form.serial_number = (index+1)">
+          <el-form :ref="`ruleForm_${index}`" :model="form" size="small" inline label-width="120px" :key="form.serial_number = (index+1)">
             <el-row>
               <el-col :span="8">
                 <el-row>
                   <el-col :span="24">
-                    <el-form-item :label="`问题${form.serial_number}：`" prop="problem">
-                      <el-input v-model="form.problem" placeholder="请输入内容"></el-input>
+                    <el-form-item :label="`问题${form.serial_number}：`" prop="problem" :rules="[{ required: true, message: '问题内容必填', trigger: 'blur' }]">
+                      <el-input v-model="form.problem" placeholder="请输入问题内容"></el-input>
                     </el-form-item>
                   </el-col>
                   <template v-if="form.type === 3">
                     <el-col :span="24">
-                      <el-form-item label="答案：">
+                      <el-form-item label="答案：" prop="answer" :rules="[{ required: true, message: '答案内容必填', trigger: 'blur' }]">
                         <el-input type="textarea" v-model="form.answer" placeholder="请输入答案"/>
                       </el-form-item>
                     </el-col>
                   </template>
                   <template v-else>  
                     <el-col v-for="(val, key) in form.option" :span="24" :key="key">
-                      <el-form-item :label="`${key}.`" prop="option">
-                        <el-input v-model="form.option[key]" placeholder="请输入答案"></el-input>
+                      <el-form-item :label="`${key}.`" :prop="'option.'+key" :rules="[{ required: true, message: '答案内容必填', trigger: 'blur' }]">
+                        <el-input v-model="form.option[key]" placeholder="请输入答案内容"></el-input>
                       </el-form-item>
                     </el-col>
                   </template>
@@ -38,19 +38,19 @@
               <el-col :span="16">
                 <el-row>
                   <el-col :span="12" v-if="form.type !== 3">
-                    <el-form-item label="选项数量：">
+                    <el-form-item label="选项数量：" prop="count" :rules="[{ required: true, message: '选项数量必填', trigger: 'change' }]">
                       <el-input-number v-model="form.count" controls-position="right" @change="handleChange(form)" :min="2" :max="8"></el-input-number>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12" :offset="form.type === 3 ? 12 : 0">
-                    <el-form-item label="分值：">
+                    <el-form-item label="分值：" prop="score" :rules="[{ required: true, message: '分值必填', trigger: 'blur' }]">
                       <el-input v-model.number="form.score" placeholder="请输入内容"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col v-if="form.type !== 3" :span="12" :offset="12">
-                    <el-form-item label="正确选项：" prop="answer">
+                    <el-form-item label="正确选项：" prop="answer" :rules="[{ required: true, message: '正确选项必填', trigger: 'blur' }]">
                       <el-select :multiple="form.type !== 1" v-model="form.answer" clearable>
                         <el-option v-for="(val, key) in form.option" :key="key" :label="key" :value="key"></el-option>
                       </el-select>
@@ -150,17 +150,17 @@ export default {
         //   score: ''
         // }
       ],
-      rules: {
-        problem: [
-          { required: true, message: '问题必填', trigger: 'blur' }
-        ],
-        option: [
-          { required: true, message: '答案选项必填', trigger: 'blur' }
-        ],
-        answer: [
-          { required: true, message: '答案必填', trigger: 'blur' }
-        ]
-      }
+      // rules: {
+        // problem: [
+        //   { required: true, message: '问题必填', trigger: 'blur' }
+        // ],
+        // option: [
+        //   { required: true, message: '答案选项必填', trigger: 'blur' }
+        // ],
+        // answer: [
+        //   { required: true, message: '答案必填', trigger: 'blur' }
+        // ]
+      // }
     }
   },
   methods: {
@@ -209,14 +209,36 @@ export default {
       this.problemList.splice(index, 1)
     },
     // 保存答卷
-    saveQuestionExam () {
-      // this.$refs.ruleForm.validate(valid => {
+    async saveQuestionExam () {
+      // this.$refs.ruleForm_0[0].validate(valid => {
       //   if (valid) {
-
+      //     this.$message.info('submit')
       //   } else {
 
       //   }
       // })
+      let validateList = this.problemList.map((item, index) => {
+        return this.$refs['ruleForm_'+index][0].validate(
+          // valid => {
+          // if (valid) {
+          //   this.$message({
+          //     type: 'success',
+          //     message: item.serial_number + 'submit',
+          //     offset: 20*(index+1)
+          //   })
+          // } else {
+
+          // }
+        // }
+        )
+      })
+      console.log(validateList)
+      try {
+        await Promise.all(validateList)
+      } catch (error) {
+        return
+      }
+      // this.$message.success('submit')
       // return
       console.log(this.problemList)
       this.problemList = this.problemList.map(item => {

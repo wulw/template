@@ -58,7 +58,7 @@
           <el-form-item>
             <el-image
               style="width: 100px; height: 100px"
-              :src="file_picture_url"
+              :src="$AllPath.imgPath+form.file_picture"
               fit="fill"></el-image>
           </el-form-item>
         </el-col>
@@ -76,7 +76,8 @@
           <el-form-item>
             <ol class="text-wrapper">
               <li v-for="(item, index) in form.file_text" :key="index">
-                <a :href="item.path">{{ item.name }}</a>
+                <a :href="$AllPath.imgPath+item.path">{{ item.name }}</a>
+                <i class="el-icon-circle-close" @click="form.file_text.splice(index, 1)"></i>
               </li>
             </ol>
           </el-form-item>
@@ -85,7 +86,7 @@
     </el-form>
     <div class="form-footer">
       <el-button v-if="auditFlag && partyActivityItem && partyActivityItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
-      <el-button v-else-if="partyActivityItem && partyActivityItem.status === 0" type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button v-else-if="!partyActivityItem || (partyActivityItem && partyActivityItem.status === 0)" type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
       <el-button type="default" size="small" @click="cancel">{{ `${partyActivityItem && partyActivityItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
     <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="partyActivity" :id="partyActivityItem.id" @notifyRefresh="auditNotifyRefresh" @close="auditDialogVisible = false" />
@@ -262,6 +263,23 @@ export default {
     // list-style: none;
     margin: 0;
     padding-left: 16px;
+    li {
+      &:hover {
+        i {
+          display: inline-block;
+        }
+      }
+      a {
+        // width: 400px;
+        // display: inline-block;
+      }
+      i {
+        margin-left: 16px;
+        display: none;
+        cursor: pointer;
+        color: red;
+      }
+    }
   }
   .form-footer {
     text-align: center;

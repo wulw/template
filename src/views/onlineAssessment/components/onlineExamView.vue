@@ -1,16 +1,18 @@
 <template>
   <div class="online-exam-view-wrapper">
     <div class="page-header">
-      <!-- <el-button type="primary" size="small" @click="goBack">返回</el-button> -->
-      <el-button type="primary" size="small" @click="submit">提交</el-button>
-      <i class="el-icon-question"></i>
-      <span>注意：请确定答卷完成后再进行提交操作，一旦提交，则不可进行修改！</span>
+      <template v-if="onlineExamItem.status !== 3">
+        <el-button type="primary" size="small" @click="submit">提交</el-button>
+        <i class="el-icon-question"></i>
+        <span>注意：请确定答卷完成后再进行提交操作，一旦提交，则不可进行修改！</span>
+      </template>
+      <el-button v-else type="primary" size="small" @click="goBack">返回</el-button>
       <strong>{{ onlineExamItem.name }}</strong>
       <span v-if="onlineExamItem.status === 3" style="float: right">{{ `总分：${totalScore}分` }}</span>
     </div>
     <div class="content-wrapper">
-      <template v-for="form in problemList">
-          <el-form :model="form" size="small" inline label-width="120px" :key="form.serial_number">
+      <template v-for="form, index in problemList">
+          <el-form :ref="`ruleForm_${index}`" :model="form" size="small" inline label-width="120px" :key="form.serial_number">
             <el-row>
               <el-col :span="8">
                 <el-row>
@@ -22,27 +24,31 @@
                   </el-col>
                   <template v-if="form.type === 3">
                     <el-col :span="24">
-                      <el-form-item label="解答：">
+                      <el-form-item label="解答：" prop="result" :rules="[{ required: true, message: '答案必填', trigger: 'blur' }]">
                         <el-input type="textarea" v-model="form.result" placeholder="请输入答案"/>
                       </el-form-item>
                     </el-col>
                   </template>
                   <template v-else-if="form.type === 1">  
                     <el-col :span="24">
+                      <el-form-item prop="result" :rules="[{ required: true, message: '答案必填', trigger: 'change' }]">
                         <el-radio-group v-model="form.result">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-radio :label="key">{{ `${key}. ${val}` }}</el-radio>
                           </el-form-item>
                         </el-radio-group>
+                      </el-form-item>  
                     </el-col>
                   </template>
                   <template v-else>  
                     <el-col :span="24">
+                      <el-form-item prop="result" :rules="[{ required: true, message: '答案必选', trigger: 'change' }]">
                         <el-checkbox-group v-model="form.result">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-checkbox :label="key">{{ `${key}. ${val}` }}</el-checkbox>
                           </el-form-item>
                         </el-checkbox-group>
+                      </el-form-item>  
                     </el-col>
                   </template>
                 </el-row> 
@@ -57,7 +63,7 @@
                   </el-col>
                   <el-col v-if="onlineExamItem.status === 3" :span="16">
                     <el-form-item label="得分：">
-                      <span>{{ `${form.score}分` }}</span>
+                      <span>{{ `${form.user_answer.defen}分` }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -96,8 +102,22 @@ export default {
     }
   },
   methods: {
+    // 返回
+    goBack () {
+      this.$emit('goBack')
+    },
     // 答题提交
-    submit () {
+    async submit () {
+      let validateList = this.problemList.map((item, index) => {
+        console.log(this.$refs['ruleForm_'+index])
+        return this.$refs['ruleForm_'+index][0].validate()
+      })
+      console.log(validateList)
+      try {
+        await Promise.all(validateList)
+      } catch (error) {
+        return
+      }
       let time = parseInt(((Date.now() - this.startTime)/60000).toFixed())
       console.log(time)
       let answerList = this.problemList.map(item => {
@@ -158,13 +178,21 @@ export default {
 .online-exam-view-wrapper {
   padding: 16px;
   .page-header {
+    position: relative;
     .el-icon-question {
       font-size: 24px;
       vertical-align: middle;
       margin-left: 12px;
     }
+    strong {
+      position: absolute;
+      left: 55%;
+      top: 8px;
+      transform: translateX(-50%);
+    }
     span {
       vertical-align: middle;
+      margin-top: 8px;
     }
   }
   .content-wrapper {
@@ -185,6 +213,12 @@ export default {
           .el-input-number {
             width: 100%;
           }
+        }
+        .el-form-item__error {
+          margin-left: 120px;
+        }
+        .el-textarea + .el-form-item__error {
+          margin-left: 0;
         }
       }
     }

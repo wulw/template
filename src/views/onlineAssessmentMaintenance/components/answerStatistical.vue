@@ -5,7 +5,7 @@
     </div>
     <div class="dialog-body">
       <div class="total">
-        <span>浏览量：{{ total.quantity }}</span>
+        <span>总数量：{{ total.quantity }}</span>
         <span>回收量：{{ total.questions_p }}</span>
         <span>平均作答时间：{{ total.answer_time_avg }}</span>
       </div>

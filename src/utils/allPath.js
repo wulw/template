@@ -8,8 +8,8 @@
  */
 const allPath = {
     //  imgPath: 'http://192.168.2.127:9005' //本地环境
-    imgPath: 'http://pujiao.test' //测试环境
-    
+    // imgPath: 'http://pujiao.test' //测试环境
+    imgPath: 'http://47.96.171.165:9005' // 线上环境
   }
   
   export default allPath

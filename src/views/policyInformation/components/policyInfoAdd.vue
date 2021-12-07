@@ -64,7 +64,7 @@
     </el-form>
     <div class="form-footer">
       <el-button v-if="auditFlag && policyInfoItem && policyInfoItem.status === 0" type="primary" size="small" @click="auditDialogVisible = true">审 核</el-button>
-      <el-button v-else-if="policyInfoItem && policyInfoItem.status === 0" type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
+      <el-button v-else-if="!policyInfoItem || (policyInfoItem && policyInfoItem.status === 0)" type="primary" size="small" :loading="submitLoading" @click="submit">确 定</el-button>
       <el-button type="default" size="small" @click="cancel">{{ `${policyInfoItem && policyInfoItem.status !== 0 ? '关 闭' : '取 消'}` }}</el-button>
     </div>
     <audit-form v-if="auditFlag" :auditDialogVisible="auditDialogVisible" auditModule="policyInfo" :id="policyInfoItem.id" @notifyRefresh="auditNotifyRefresh" @close="auditDialogVisible = false" />

@@ -60,7 +60,7 @@ export default {
         },
         series: [
           {
-            name: '2011',
+            name: '',
             type: 'bar',
             barWidth: 8,
             data: this.ageData.map(item => item.count)
