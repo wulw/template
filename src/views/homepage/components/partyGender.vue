@@ -83,7 +83,7 @@ export default {
               symbolClip: true,
               symbolSize: [10, 26],
               symbolBoundingData: maxData,
-              data: [this.genderData.man, this.genderData.women],
+              data: [this.genderData.man, this.genderData.woman],
               markLine: {
                   symbol: 'none',
                   label: {
@@ -123,10 +123,10 @@ export default {
             animationDuration: 0,
             symbolRepeat: 'fixed',
             symbolMargin: '5%',
-            symbol: men,
+            symbol: women,
             symbolSize: [10, 26],
             symbolBoundingData: maxData,
-            data: [this.genderData.man, this.genderData.women],
+            data: [this.genderData.man, this.genderData.woman],
             z: 5
         }]
       }

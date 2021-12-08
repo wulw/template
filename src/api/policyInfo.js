@@ -24,11 +24,11 @@ export function policyInfoAdd(data) {
 }
 
 // 修改
-export function policyInfoModify(data) {
+export function policyInfoModify(params) {
   return request({
-    url: `/PartyBuildingApi/PolicyInformation/${data.get('id')}`,
+    url: `/PartyBuildingApi/PolicyInformation/${params.id}`,
     method: 'put',
-    data
+    params
   })
 }
 

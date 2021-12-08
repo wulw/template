@@ -53,7 +53,7 @@
           <el-form-item>
             <el-image
               style="width: 100px; height: 100px"
-              :src="file_picture_url"
+              :src="$AllPath.imgPath+form.file_picture"
               fit="fill"></el-image>
           </el-form-item>
         </el-col>
@@ -160,7 +160,7 @@ export default {
             formData.append(key, this.form[key])
           }
           if (this.policyInfoItem) {
-            policyInfoModify(formData).then(res => {
+            policyInfoModify(this.form).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false
                 this.$message.success(res.msg)
@@ -199,8 +199,6 @@ export default {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
     if (this.policyInfoItem) {
-      this.policyInfoItem.file_picture = JSON.parse(this.policyInfoItem.file_video || null)
-      this.policyInfoItem.file_video = JSON.parse(this.policyInfoItem.file_video || null) || []
       this.form = this.policyInfoItem
     }
   }

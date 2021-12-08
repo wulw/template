@@ -185,7 +185,7 @@ export default {
             }
           }
           if (this.learningColumnItem) {
-            learningColumnModify(formData).then(res => {
+            learningColumnModify(this.form).then(res => {
               if (res && res.code === 200) {
                 this.$message.success(res.msg)
                 this.submitLoading = false

@@ -24,11 +24,11 @@ export function partyActivityAdd(data) {
 }
 
 // 修改
-export function partyActivityModify(data) {
+export function partyActivityModify(params) {
   return request({
-    url: `/PartyBuildingApi/PartyActivities/${data.get('id')}`,
+    url: `/PartyBuildingApi/PartyActivities/${params.id}`,
     method: 'put',
-    data
+    params
   })
 }
 

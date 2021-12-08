@@ -199,7 +199,8 @@ export default {
             }
           }
           if (this.partyActivityItem) {
-            partyActivityModify(formData).then(res => {
+            console.log(this.form)
+            partyActivityModify(this.form).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false
                 this.$message.success(res.msg)
