@@ -3,7 +3,7 @@
     <div class="title">
       <strong>{{ `资讯${!auditFlag ? '维护' : '详情'}` }}</strong>
     </div>
-    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="auditFlag">
+    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="disabled">
       <el-row>
         <el-col :span="12">
           <el-form-item label="文章标题：" prop="title">
@@ -58,7 +58,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <tinymce-editor ref="editor" v-model="form.text" :disabled="auditFlag"></tinymce-editor>
+          <tinymce-editor ref="editor" v-model="form.text" :disabled="disabled"></tinymce-editor>
         </el-col>
       </el-row>
     </el-form>
@@ -148,6 +148,10 @@ export default {
       } else {
         return `${this.form.file_picture}`
       }
+    },
+    disabled() {
+      if (!this.policyInfoItem) return false
+      return this.auditFlag || (this.policyInfoItem && this.policyInfoItem.status !== 0)
     }
   },
   methods: {
@@ -155,10 +159,6 @@ export default {
       this.$refs.addForm.validate((valid) => {
         if (valid) {
           this.submitLoading = true
-          let formData = new FormData()
-          for (let key in this.form) {
-            formData.append(key, this.form[key])
-          }
           if (this.policyInfoItem) {
             policyInfoModify(this.form).then(res => {
               if (res && res.code === 200) {
@@ -169,6 +169,10 @@ export default {
               }
             })
           } else {
+            let formData = new FormData()
+            for (let key in this.form) {
+              formData.append(key, this.form[key])
+            }
             policyInfoAdd(formData).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false

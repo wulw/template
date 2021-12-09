@@ -3,7 +3,7 @@
     <div class="title">
       <strong>活动维护</strong>
     </div>
-    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="auditFlag">
+    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="disabled">
       <el-row>
         <el-col :span="12">
           <el-form-item label="活动标题：" prop="title">
@@ -64,7 +64,7 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="活动内容：" prop="text">
-            <tinymce-editor ref="editor" v-model="form.text" :disabled="auditFlag"></tinymce-editor>
+            <tinymce-editor ref="editor" v-model="form.text" :disabled="disabled"></tinymce-editor>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -77,7 +77,7 @@
             <ol class="text-wrapper">
               <li v-for="(item, index) in form.file_text" :key="index">
                 <a :href="$AllPath.imgPath+item.path">{{ item.name }}</a>
-                <i class="el-icon-circle-close" @click="form.file_text.splice(index, 1)"></i>
+                <i v-if="!disabled" class="el-icon-circle-close" @click="form.file_text.splice(index, 1)"></i>
               </li>
             </ol>
           </el-form-item>
@@ -183,6 +183,12 @@ export default {
       } else {
         return `${this.form.file_picture}`
       }
+    },
+    disabled() {
+      if (!this.partyActivityItem) {
+        return false
+      }
+      return this.auditFlag || (this.partyActivityItem && this.partyActivityItem.status !== 0)
     }
   },
   methods: {
@@ -190,17 +196,15 @@ export default {
       this.$refs.addForm.validate(valid => {
         if (valid) {
           this.submitLoading = true
-          let formData = new FormData()
-          for (let key in this.form) {
-            if (key === 'file_text') {
-              formData.append(key, JSON.stringify(this.form[key]))
-            } else {
-              formData.append(key, this.form[key])
-            }
-          }
           if (this.partyActivityItem) {
-            console.log(this.form)
-            partyActivityModify(this.form).then(res => {
+            // console.log(this.form)
+            let form = JSON.parse(JSON.stringify(this.form))
+            for (let key in form) {
+              if (key === 'file_text') {
+                form[key] = JSON.stringify(form[key])
+              }
+            }
+            partyActivityModify(form).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false
                 this.$message.success(res.msg)
@@ -209,6 +213,14 @@ export default {
               }
             })
           } else {
+            let formData = new FormData()
+            for (let key in this.form) {
+              if (key === 'file_text') {
+                formData.append(key, JSON.stringify(this.form[key]))
+              } else {
+                formData.append(key, this.form[key])
+              }
+            }
             partyActivityAdd(formData).then(res => {
               if (res && res.code === 200) {
                 this.submitLoading = false

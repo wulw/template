@@ -60,14 +60,15 @@
           <span>{{ auditStatusList.find(item => item.valueId === scope.row.status).valueDesc }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="240" align="center">
+      <el-table-column label="操作" width="360" align="center">
         <template slot-scope="scope">
           <template v-if="auditFlag">
             <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
           </template>
           <template v-else>
             <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <template v-else-if="scope.row.status === 1">
+            <template v-else>
+              <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
               <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
               <el-button v-else-if="scope.row.is_top === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
             </template>
@@ -137,7 +138,7 @@ export default {
         name: '',
         type: '',
         release_time: '',
-        status: ''
+        status: 0
       },
       queryLoading: false,
       tableData: [],

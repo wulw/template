@@ -3,7 +3,7 @@
     <div class="title">
       <strong>{{ `文章${!auditFlag ? '维护' : '详情'}` }}</strong>
     </div>
-    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="auditFlag">
+    <el-form ref="addForm" :model="form" :rules="rules" label-width="96px" size="small" :disabled="disabled">
       <el-row>
         <el-col :span="12">
           <el-form-item label="文章标题：" prop="title">
@@ -58,23 +58,25 @@
           </el-form-item>
         </el-col>
         <el-col v-if="form.type !== 2" :span="24">
-          <tinymce-editor ref="editor" v-model="form.text" :disabled="auditFlag"></tinymce-editor>
+          <tinymce-editor ref="editor" v-model="form.text" :disabled="disabled"></tinymce-editor>
         </el-col>
-        <el-col v-else :span="24">
-          <el-form-item label="视频：" prop="file_video">
-            <upload-file :accept="'.mp4,.wav'" @uploadSuccess="uploadVideoSuccess" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="form.file_video.length" :span="24">
-          <el-form-item>
-            <ol class="video-wrapper">
-              <li v-for="(item, index) in form.file_video" :key="index">
-                <video width="200" height="150" :src="$AllPath.imgPath+item.path" controls>{{ item.name }}</video>
-                <i class="el-icon-circle-close" @click="form.file_video.splice(index, 1)"></i>
-              </li>
-            </ol>
-          </el-form-item>
-        </el-col>
+        <template v-else>
+          <el-col :span="24">
+            <el-form-item label="视频：" prop="file_video">
+              <upload-file :accept="'.mp4,.wav'" @uploadSuccess="uploadVideoSuccess" />
+            </el-form-item>
+          </el-col>
+          <el-col v-if="form.file_video.length" :span="24">
+            <el-form-item>
+              <ol class="video-wrapper">
+                <li v-for="(item, index) in form.file_video" :key="index">
+                  <video width="200" height="150" :src="$AllPath.imgPath+item.path" controls>{{ item.name }}</video>
+                  <i v-if="!disabled" class="el-icon-circle-close" @click="form.file_video.splice(index, 1)"></i>
+                </li>
+              </ol>
+            </el-form-item>
+          </el-col>
+        </template>
       </el-row>
     </el-form>
     <div class="form-footer">
@@ -169,6 +171,10 @@ export default {
       } else {
         return `${this.form.file_picture}`
       }
+    },
+    disabled() {
+      if (!this.learningColumnItem) return false
+      return this.auditFlag || (this.learningColumnItem && this.learningColumnItem.status !== 0)
     }
   },
   methods: {
@@ -176,16 +182,14 @@ export default {
       this.$refs.addForm.validate(valid => {
         if (valid) {
           this.submitLoading = true
-          let formData = new FormData()
-          for (let key in this.form) {
-            if (key === 'file_video') {
-              formData.append(key, JSON.stringify(this.form[key]))
-            } else {
-              formData.append(key, this.form[key])
-            }
-          }
           if (this.learningColumnItem) {
-            learningColumnModify(this.form).then(res => {
+            let form = JSON.parse(JSON.stringify(this.form))
+            for (let key in form) {
+              if (key === 'file_video') {
+                form[key] = JSON.stringify(form[key])
+              }
+            }
+            learningColumnModify(form).then(res => {
               if (res && res.code === 200) {
                 this.$message.success(res.msg)
                 this.submitLoading = false
@@ -194,6 +198,17 @@ export default {
               }
             })
           } else {
+            let formData = new FormData()
+            for (let key in this.form) {
+              if (key === 'file_video') {
+                formData.append(key, JSON.stringify(this.form[key]))
+              } else {
+                formData.append(key, this.form[key])
+              }
+            }
+            if (this.form.type === 2) {
+              formData.delete('text')
+            }
             learningColumnAdd(formData).then(res => {
               if (res && res.code === 200) {
                 this.$message.success(res.msg)

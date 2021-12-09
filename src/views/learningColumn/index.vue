@@ -67,6 +67,7 @@
           <template v-else>
             <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
             <template v-else-if="scope.row.status === 1"> 
+              <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
               <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
               <el-button v-else type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
             </template>
@@ -137,7 +138,7 @@ export default {
         name: '',
         type: '',
         release_time: [],
-        status: ''
+        status: 0
       },
       queryLoading: false,
       tableData: [],

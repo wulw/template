@@ -24,12 +24,12 @@ export function learningColumnAdd(data) {
 } 
 
 // 修改
-export function learningColumnModify(params) {
+export function learningColumnModify(data) {
   // console.log(params)
   return request({
-    url: `/PartyBuildingApi/LearningColumn/${params.id}`,
+    url: `/PartyBuildingApi/LearningColumn/${data.id}`,
     method: 'put',
-    params
+    data
   })
 } 
 

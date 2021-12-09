@@ -68,6 +68,7 @@
           </template>
           <template v-else>
             <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button v-else type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
           </template>
         </template>
       </el-table-column>
@@ -130,7 +131,7 @@ export default {
         name: '',
         type: '',
         release_time: '',
-        status: ''
+        status: 0
       },
       queryLoading: false,
       tableData: [],

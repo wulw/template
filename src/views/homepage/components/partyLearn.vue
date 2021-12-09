@@ -8,7 +8,7 @@
             <span>{{ learnData.picture }}</span>
             <span>人</span>
           </div>
-          <div class="percentage">{{ (learnData.picture / (learnData.picture + learnData.video)).toFixed(2) * 100 }}%</div>
+          <div class="percentage">{{ ((learnData.picture / (learnData.picture + learnData.video)) * 100).toFixed(2) }}%</div>
         </div>
       </div>
       <div class="flex-item">
@@ -18,7 +18,7 @@
             <span>{{ learnData.video }}</span>
             <span>人</span>
           </div>
-          <div class="percentage">{{ (learnData.video / (learnData.picture + learnData.video)).toFixed(2) * 100 }}%</div>
+          <div class="percentage">{{ ((learnData.video / (learnData.picture + learnData.video)) * 100).toFixed(2) }}%</div>
         </div>
       </div>
     </div>
