@@ -1,7 +1,7 @@
 <template>
   <div class="online-exam-view-wrapper">
     <div class="page-header">
-      <template v-if="onlineExamItem.status !== 3">
+      <template v-if="onlineExamItem.status === 1">
         <el-button type="primary" size="small" @click="submit">提交</el-button>
         <i class="el-icon-question"></i>
         <span>注意：请确定答卷完成后再进行提交操作，一旦提交，则不可进行修改！</span>

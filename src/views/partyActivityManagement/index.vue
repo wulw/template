@@ -31,7 +31,7 @@
         <el-button type="primary" :loading="queryLoading" @click="querySearch">查询</el-button>
       </el-form-item>
       <el-form-item v-if="!auditFlag" style="float: right; margin-right: 0">
-        <el-button type="primary" @click="dialogVisible = true">新增</el-button>
+        <el-button type="primary" @click="dialogVisible = true; partyActivityItem = null">新增</el-button>
         <el-button type="danger" @click="handleDelete">删除</el-button>
       </el-form-item>
     </el-form>

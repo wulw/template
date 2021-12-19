@@ -83,72 +83,72 @@ export default {
   data () {
     return {
       problemList: [
-        {
-          serial_number: '1',
-          problem: '花儿为什么这样红？',
-          type: 1,
-          count: 3,
-          option: {
-            'A': '就是这样红。',
-            'B': '应该这样红',
-            'C': '涂了红药水'
-          },
-          answer: 'A',
-          score: 5
-        },
-        {
-          serial_number: '2',
-          problem: '0.26的计数单位是多少？',
-          type: 2,
-          count: 3,
-          option: {
-            'A': '0.1',
-            'B': '0.01',
-            'C': '0.001'
-          },
-          answer: ['A', 'B'],
-          score: 5
-        },
-        {
-          serial_number: '3',
-          problem: '中国在哪个洲？',
-          type: 3,
-          answer: '亚洲',
-          score: 10
-        },
         // {
-        //   serial_number: '',
-        //   problem: '',
+        //   serial_number: '1',
+        //   problem: '花儿为什么这样红？',
         //   type: 1,
         //   count: 3,
         //   option: {
-        //     'A': '',
-        //     'B': '',
-        //     'C': ''
+        //     'A': '就是这样红。',
+        //     'B': '应该这样红',
+        //     'C': '涂了红药水'
         //   },
-        //   answer: '',
-        //   score: ''
+        //   answer: 'A',
+        //   score: 5
         // },
         // {
-        //   serial_number: '',
-        //   problem: '',
+        //   serial_number: '2',
+        //   problem: '0.26的计数单位是多少？',
         //   type: 2,
         //   count: 3,
         //   option: {
-        //     'A': '',
-        //     'B': '',
-        //     'C': ''
+        //     'A': '0.1',
+        //     'B': '0.01',
+        //     'C': '0.001'
         //   },
-        //   answer: [],
-        //   score: ''
+        //   answer: ['A', 'B'],
+        //   score: 5
         // },
         // {
-        //   serial_number: '',
-        //   problem: '',
+        //   serial_number: '3',
+        //   problem: '中国在哪个洲？',
         //   type: 3,
-        //   answer: '',
-        //   score: ''
-        // }
+        //   answer: '亚洲',
+        //   score: 10
+        // },
+        {
+          serial_number: '',
+          problem: '',
+          type: 1,
+          count: 3,
+          option: {
+            'A': '',
+            'B': '',
+            'C': ''
+          },
+          answer: '',
+          score: ''
+        },
+        {
+          serial_number: '',
+          problem: '',
+          type: 2,
+          count: 3,
+          option: {
+            'A': '',
+            'B': '',
+            'C': ''
+          },
+          answer: [],
+          score: ''
+        },
+        {
+          serial_number: '',
+          problem: '',
+          type: 3,
+          answer: '',
+          score: ''
+        }
       ],
       // rules: {
         // problem: [

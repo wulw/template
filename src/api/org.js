@@ -15,11 +15,11 @@ export function getTreeList(params) {
 }
 
 // 党组织新增
-export function partyOrgAdd(params) {
+export function partyOrgAdd(data) {
   return request({
     url: '/PartyBuildingApi/PartyOrganization',
     method: 'post',
-    params
+    data
   })
 }
 

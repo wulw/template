@@ -38,6 +38,7 @@
 <script>
 import { partyOrgAdd, partyOrgModify } from '@/api/org'
 import Cookies from 'js-cookie'
+import { parse } from 'path-to-regexp'
 
 export default {
   name: 'partyOrgAdd',
@@ -62,6 +63,9 @@ export default {
         party_name: '',
         secretary_name: '',
         tel: '',
+        sheng: '',
+        shi: '',
+        xian: '',
         xiang: ''
       },
       rules: {
@@ -106,9 +110,16 @@ export default {
             let params = {
               school_id: this.userInfo.school_id,
               campus_id: this.userInfo.campus_id,
-              p_id: this.partyOrgParams.p_id
+              p_id: 0
             }
-            partyOrgAdd({ ...this.addForm, ...params }).then(res => {
+            let formData = new FormData()
+            for (let key in this.addForm) {
+              formData.append(key, this.addForm[key])
+            }
+            for (let key in params) {
+              formData.append(key, params[key])
+            }
+            partyOrgAdd({ ...this.addForm, ...params}).then(res => {
               this.submitLoading = false
               if (res && res.code === 200) {
                 this.$message.success('新增成功')

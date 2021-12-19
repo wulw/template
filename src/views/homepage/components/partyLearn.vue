@@ -6,7 +6,7 @@
         <div class="content">
           <div class="count">
             <span>{{ learnData.picture }}</span>
-            <span>人</span>
+            <!-- <span>人</span> -->
           </div>
           <div class="percentage">{{ ((learnData.picture / (learnData.picture + learnData.video)) * 100).toFixed(2) }}%</div>
         </div>
@@ -16,7 +16,7 @@
         <div class="content">
           <div class="count">
             <span>{{ learnData.video }}</span>
-            <span>人</span>
+            <!-- <span>人</span> -->
           </div>
           <div class="percentage">{{ ((learnData.video / (learnData.picture + learnData.video)) * 100).toFixed(2) }}%</div>
         </div>
@@ -88,6 +88,7 @@ export default {
         margin-left: 8px;
         .count {
           padding-top: 16px;
+          text-align: center;
           span {
             &:nth-child(1) {
               font-size: 35px;

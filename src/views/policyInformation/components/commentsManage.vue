@@ -10,9 +10,9 @@
       style="width: 100%">
       <!-- <el-table-column type="selection" width="50"></el-table-column> -->
       <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-      <el-table-column label="用户" prop="name" align="center"></el-table-column>
-      <el-table-column label="内容" prop="cotent" align="center" show-overflow-tooltip></el-table-column>
-      <el-table-column label="时间" prop="time" align="center"></el-table-column>
+      <el-table-column label="用户" prop="reply_username" align="center"></el-table-column>
+      <el-table-column label="内容" prop="comment" align="center" show-overflow-tooltip></el-table-column>
+      <el-table-column label="时间" prop="create_at" align="center"></el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
           <el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button>
@@ -89,11 +89,15 @@ export default {
       let params = {
         info_id: this.policyInfoItem.id
       }
+      this.tableLoading = true
       queryCommentList({ ...this.pagination, ...params }).then(res => {
         if (res && res.code === 200) {
           this.tableData = res.data.data || []
           this.pagination.total = res.data.total
         }
+        this.tableLoading = false
+      }).catch(() => {
+        this.tableLoading = false
       })
     },
     sizeChange (pageSize) {

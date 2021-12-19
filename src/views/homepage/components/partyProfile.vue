@@ -66,7 +66,7 @@ export default {
             radius: ['40%', '50%'],
             center: ['50%', '50%'],
             data: [{
-               name: this.profileData.dangzongzhi + '人',
+               name: this.profileData.dangzongzhi, // + '人',
                value: this.profileData.dangzongzhi
             }],
             left: 0,
@@ -83,7 +83,7 @@ export default {
             radius: ['40%', '50%'],
             center: ['50%', '50%'],
             data: [{
-               name: this.profileData.dangzhibu + '人',
+               name: this.profileData.dangzhibu, // + '人',
                value: this.profileData.dangzhibu
             }],
             label: {

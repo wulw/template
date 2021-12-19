@@ -106,7 +106,7 @@ export default {
         user_name: '',
         user_id: '',
         source: '',
-        release_time: '',
+        release_time: new Date(),
         user_department: '',
         file_picture: '', // 标题图片
         text: '' // 内容
@@ -202,6 +202,7 @@ export default {
   created() {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
+    this.form.user_department = this.userInfo.dept_name
     if (this.policyInfoItem) {
       this.form = this.policyInfoItem
     }

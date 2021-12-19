@@ -95,7 +95,7 @@ export default {
       // const regex = /\.(doc)|\.(docx)(\?.*)?$/i;
       // if (regex.test(file.name)) {
         // 校验文件大小
-        if (file.size < 50 * 1024 * 1024) {
+        if (file.size < 500 * 1024 * 1024) {
           if (file.size === 0) {
             this.$message.closeAll()
             this.$message({

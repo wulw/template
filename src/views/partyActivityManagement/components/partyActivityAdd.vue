@@ -36,7 +36,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="参与人数：" prop="number_people">
-            <el-input v-model="form.number_people" placeholder="请输入内容"></el-input>
+            <el-input v-model.number="form.number_people" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -256,6 +256,7 @@ export default {
   created() {
     this.form.user_name = this.userInfo.real_name
     this.form.user_id = this.userInfo.id
+    this.form.user_department = this.userInfo.dept_name
     console.log(this.userInfo.id)
     if (this.partyActivityItem) {
       this.partyActivityItem.file_text = JSON.parse(this.partyActivityItem.file_text || null) || []
