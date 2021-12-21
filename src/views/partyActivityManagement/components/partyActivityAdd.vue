@@ -36,7 +36,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="参与人数：" prop="number_people">
-            <el-input v-model.number="form.number_people" placeholder="请输入内容"></el-input>
+            <el-input v-model.number="form.number_people" oninput="value=value.replace(/[^\d]/g,'')" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -212,6 +212,7 @@ export default {
                 this.cancel()
               }
             })
+            this.submitLoading = false
           } else {
             let formData = new FormData()
             for (let key in this.form) {
@@ -229,6 +230,7 @@ export default {
                 this.cancel()
               }
             })
+            this.submitLoading = false
           }
         } else {
 

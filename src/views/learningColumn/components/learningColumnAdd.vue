@@ -197,6 +197,7 @@ export default {
                 this.cancel()
               }
             })
+            this.submitLoading = false
           } else {
             let formData = new FormData()
             for (let key in this.form) {
@@ -217,6 +218,7 @@ export default {
                 this.cancel()
               }
             })
+            this.submitLoading = false
           }
         } else {
 

@@ -106,20 +106,20 @@ export default {
         if (valid) {
           this.submitLoading = true
           // 新增
+          let params = {
+            school_id: this.userInfo.school_id,
+            campus_id: this.userInfo.campus_id
+          }
+          let formData = new FormData()
+          for (let key in this.addForm) {
+            formData.append(key, this.addForm[key])
+          }
+          for (let key in params) {
+            formData.append(key, params[key])
+          }
           if (this.partyOrgParams.type === 'add') {
-            let params = {
-              school_id: this.userInfo.school_id,
-              campus_id: this.userInfo.campus_id,
-              p_id: 0
-            }
-            let formData = new FormData()
-            for (let key in this.addForm) {
-              formData.append(key, this.addForm[key])
-            }
-            for (let key in params) {
-              formData.append(key, params[key])
-            }
-            partyOrgAdd({ ...this.addForm, ...params}).then(res => {
+            formData.append('p_id', this.partyOrgParams.p_id)
+            partyOrgAdd(formData).then(res => {
               this.submitLoading = false
               if (res && res.code === 200) {
                 this.$message.success('新增成功')
@@ -130,11 +130,12 @@ export default {
               }
             })
           } else {  // 修改
-            partyOrgModify(this.addForm).then(res => {
+            partyOrgModify({ ...this.addForm, ...this.params }).then(res => {
               this.submitLoading = false
               if (res && res.code === 200) {
                 this.$message.success('修改成功')
                 this.cancel()
+                this.$emit('notifyRefresh')
               } else {
 
               }

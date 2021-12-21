@@ -188,6 +188,8 @@ export default {
       this.$set(this.addForm, 'user_name', val.real_name)
       this.$set(this.addForm, 'user_id', val.id)
       this.$set(this.addForm, 'id_card', val.id_card)
+      this.$set(this.addForm, 'phone', val.phone)
+      this.$set(this.addForm, 'party_name', this.partyMemberParams.party_name)
     },
     remoteMethod(query) {
       let params = {

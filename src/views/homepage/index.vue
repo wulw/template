@@ -30,7 +30,8 @@
           <div class="title">
             <span>智慧校园党建分布</span>
           </div>
-          <baidu-map-wrapper :baiduMapData="baiduMapData" />
+          <baidu-map-wrapper v-if="baiduMapData.length" :baiduMapData="baiduMapData" />
+          <!-- <baidu-map-wrapper v-else /> -->
         </div>
         <div class="bottom-wrapper">
           <div class="title">

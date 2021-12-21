@@ -148,17 +148,17 @@ export default {
       }
       onlineExamView(params).then(res => {
         if (res && res.code === 200) {
-          if (res.data.length) {
+          if (res.data.length) { // 进入答题
             res.data.map(item => {
               item.option = JSON.parse(item.option)
               item.result = item.type === 2 ? [] : ''
             })
             this.problemList = res.data
             console.log(this.problemList)
-          } else if (typeof res.data === 'object') {
+          } else if (typeof res.data === 'object') {  // 查看答案
             res.data.questions.map(item => {
               item.option = JSON.parse(item.option)
-              item.result = item.answer
+              item.result = item.user_answer.answer
             })
             this.problemList = res.data.questions
             this.totalScore = res.data.total_score

@@ -36,7 +36,7 @@ export default {
         // color: ['#D0021B', '#F07138', '#F5A623', '#5CBEDC', '#E4848E', '#FFDA33'],
         grid: {
           top: 8,
-          bottom: 24,
+          bottom: 32,
           right: 16,
           left: 40
         },
@@ -49,7 +49,15 @@ export default {
         xAxis: {
           type: 'category',
           nameRotate: 45,
-          data: ['组织生活会', '三会一课', '中心小组学习会', '民主生活会', '主题党日活动', '谈话谈心']
+          data: ['组织\n生活会', '三会\n一课', '中心小组\n学习会', '民主\n生活会', '主题党日\n活动', '谈话\n谈心'],
+          axisLabel: {
+            interval: 0,
+            // rotate: 45,
+            fontSize: 12,
+            // formatter: function(value) {
+            //   return value.split('').join('\n')
+            // }
+          }
         },
         yAxis: {
           type: 'value'

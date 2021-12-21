@@ -33,11 +33,11 @@ export function partyOrgDel(params) {
 }
 
 // 党组织修改
-export function partyOrgModify(params) {
+export function partyOrgModify(data) {
   return request({
-    url: `/PartyBuildingApi/PartyOrganization/${params.id}`,
+    url: `/PartyBuildingApi/PartyOrganization/${data.id}`,
     method: 'put',
-    params
+    data
   })
 }
 

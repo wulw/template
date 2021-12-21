@@ -38,25 +38,25 @@ export default {
           {
             subtext: '党总支',
             left: '12.5%',
-            top: '75%',
+            top: '70%',
             textAlign: 'center'
           },
           {
             subtext: '党支部',
             left: '37.5%',
-            top: '75%',
+            top: '70%',
             textAlign: 'center'
           },
           {
             subtext: '正式党员',
             left: '62.5%',
-            top: '75%',
+            top: '70%',
             textAlign: 'center'
           },
           {
             subtext: '预备党员',
             left: '87.5%',
-            top: '75%',
+            top: '70%',
             textAlign: 'center'
           }
         ],

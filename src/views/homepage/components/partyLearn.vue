@@ -68,8 +68,8 @@ export default {
   height: calc(100% - 48px);
   .flex-wrapper {
     display: flex;
-    height: calc(100% - 32px);
-    padding: 16px 4px;
+    height: calc(100% - 24px);
+    padding: 8px 4px;
     .flex-item {
       margin: 0 8px;
       flex: 1;
@@ -87,7 +87,7 @@ export default {
       .content {
         margin-left: 8px;
         .count {
-          padding-top: 16px;
+          padding-top: 8px;
           text-align: center;
           span {
             &:nth-child(1) {
@@ -100,7 +100,7 @@ export default {
           }
         }
         .percentage {
-          padding-top: 8px;
+          // padding-top: 8px;
           text-align: center;
           color: #4A4A4A;
         }
@@ -114,6 +114,30 @@ export default {
     }
     span {
       margin-right: 8px;
+    }
+  }
+}
+@media screen and (min-width: 1200px) and (max-width: 1366px) {
+  .flex-wrapper {
+    padding: 2px !important;
+    height: calc(100% - 20px) !important;
+    .title {
+      font-size: 12px !important;
+      margin-left: 16px;
+    }
+    .content {
+      .count {
+        span {
+          &:nth-child(1) {
+            font-size: 24px !important;
+          }
+        }
+      }
+    }
+  }
+  .footer {
+    label {
+      font-size: 12px !important;
     }
   }
 }

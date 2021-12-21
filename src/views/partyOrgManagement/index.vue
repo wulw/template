@@ -209,19 +209,11 @@ export default {
     },
     // 模板下载地址
     templateDownloadUrl() {
-      if (process.env.NODE_ENV === 'development') {
-        return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoTemplate`
-      } else {
-        return '/PartyBuildingApi/partyOrganizationInfoTemplate'
-      }
+      return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoTemplate`
     },
     // 导出url
     exportDataUrl() {
-      if (process.env.NODE_ENV === 'development') {
-        return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoExport/${this.partyOrgItem.party_id}`
-      } else {
-        return `/PartyBuildingApi/partyOrganizationInfoExport/${this.partyOrgItem.party_id}`
-      }
+      return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoExport/${this.partyOrgItem.id}`      
     }
   },
   methods: {
@@ -241,7 +233,8 @@ export default {
       this.partyMemberItem = null
       this.partyMemberParams = {
         type: 'add',
-        party_id: this.partyOrgItem.id
+        party_id: this.partyOrgItem.id,
+        party_name: this.partyOrgItem.party_name
       }
     },
     // 批量删除

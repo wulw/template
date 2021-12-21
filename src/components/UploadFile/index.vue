@@ -121,7 +121,7 @@ export default {
           this.$message.closeAll()
           this.$message({
             type: 'info',
-            message: `${file.name}文件大小不能超过50M`
+            message: `${file.name}文件大小不能超过500M`
           })
           return false
         }

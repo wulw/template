@@ -34,11 +34,7 @@ export default {
   },
   computed: {
     uploadUrl() {
-      if (process.env.NODE_ENV === 'development') {
-        return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoImport`
-      } else {
-        return `/PartyBuildingApi/partyOrganizationInfoImport`
-      }
+      return `${process.env.VUE_APP_BASE_API}/PartyBuildingApi/partyOrganizationInfoImport`
     },
     headers() {
       return {

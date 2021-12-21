@@ -79,6 +79,7 @@ export default {
         }).then(res => {
           if (res && res.code) {
             this.$message.success(res.msg)
+            this.getCommentList()
           }
         })
       }).catch(() => {

@@ -32,6 +32,11 @@ export default {
       this.baiduMapData.forEach(item => {
         let marker = new BMap.Marker(new BMap.Point(item.lng, item.lat))
         map.addOverlay(marker)
+        // let label = new BMap.Label(item.xiang, {       // 创建文本标注
+        //   position: new BMap.Point(item.lng, item.lat),
+        //   offset: new BMap.Size(0, -50)
+        // })  
+        // map.addOverlay(label)  
       })
       // // 创建点标记
       // var marker1 = new BMap.Marker(new BMap.Point(116.404, 39.925))
