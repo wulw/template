@@ -134,7 +134,7 @@ export default {
     onSuccess(response, file, fileList) {
       console.log(response, file, fileList)
       if (response && response.code === '200') {
-        this.$message.error(response.msg)
+        this.$message.error(response.msg+`${response.data&&response.data.length?response.data[0]:''}`)
         this.$emit('notify')
       }
     }

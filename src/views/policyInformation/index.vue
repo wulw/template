@@ -51,9 +51,9 @@
           <span>{{ informationTypeList.find(item => item.valueId === scope.row.type).valueDesc }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="发布人" prop="user_name" align="center"></el-table-column>
+      <el-table-column label="发布人" prop="user_name" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="来源" prop="source" align="center"></el-table-column>
-      <el-table-column label="发布时间" prop="release_time" align="center"></el-table-column>
+      <el-table-column label="发布时间" prop="release_time" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="单位" prop="user_department" align="center" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="审核状态" prop="status" align="center">
         <template slot-scope="scope">

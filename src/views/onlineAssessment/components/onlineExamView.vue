@@ -25,14 +25,14 @@
                   <template v-if="form.type === 3">
                     <el-col :span="24">
                       <el-form-item label="解答：" prop="result" :rules="[{ required: true, message: '答案必填', trigger: 'blur' }]">
-                        <el-input type="textarea" v-model="form.result" placeholder="请输入答案"/>
+                        <el-input type="textarea" v-model="form.result" placeholder="请输入答案" :disabled="onlineExamItem.status === 3" />
                       </el-form-item>
                     </el-col>
                   </template>
                   <template v-else-if="form.type === 1">  
                     <el-col :span="24">
                       <el-form-item prop="result" :rules="[{ required: true, message: '答案必填', trigger: 'change' }]">
-                        <el-radio-group v-model="form.result">
+                        <el-radio-group v-model="form.result" :disabled="onlineExamItem.status === 3">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-radio :label="key">{{ `${key}. ${val}` }}</el-radio>
                           </el-form-item>
@@ -43,7 +43,7 @@
                   <template v-else>  
                     <el-col :span="24">
                       <el-form-item prop="result" :rules="[{ required: true, message: '答案必选', trigger: 'change' }]">
-                        <el-checkbox-group v-model="form.result">
+                        <el-checkbox-group v-model="form.result" :disabled="onlineExamItem.status === 3">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-checkbox :label="key">{{ `${key}. ${val}` }}</el-checkbox>
                           </el-form-item>

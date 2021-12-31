@@ -50,7 +50,7 @@
         <span class="name">党组织地址：</span>
         <span>{{ `${partyOrgItem.sheng}${partyOrgItem.shi}${partyOrgItem.xian}${partyOrgItem.xiang}`}}</span>
         <span class="name">人数：</span>
-        <span v-if="partyOrgItem.children">{{ partyOrgItem.children.length }}</span>
+        <span>{{ pagination.total }}</span>
       </div>
       <!-- 筛选操作 -->
       <el-form :model="filterForm" inline size="small">

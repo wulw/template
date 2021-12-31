@@ -77,6 +77,7 @@ import { informationTypeList } from '@/libs/term-mapping'
 import { policyInfoAdd, policyInfoModify } from '@/api/policyInfo'
 import Cookies from 'js-cookie'
 import AuditForm from '@/components/AuditForm/auditForm.vue'
+import { formatTime } from '@/libs/utils'
 
 export default {
   name: 'policyInfoAdd',
@@ -106,7 +107,7 @@ export default {
         user_name: '',
         user_id: '',
         source: '',
-        release_time: new Date(),
+        release_time: formatTime(new Date(), '-').date,
         user_department: '',
         file_picture: '', // 标题图片
         text: '' // 内容

@@ -22,7 +22,7 @@
                   <template v-if="form.type === 3">
                     <el-col :span="24">
                       <el-form-item label="答案：" prop="answer" :rules="[{ required: true, message: '答案内容必填', trigger: 'blur' }]">
-                        <el-input type="textarea" v-model="form.answer" placeholder="请输入答案"/>
+                        <el-input type="textarea" v-model="form.answer" disabled placeholder="请输入答案"/>
                       </el-form-item>
                     </el-col>
                   </template>

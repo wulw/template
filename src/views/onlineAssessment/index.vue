@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="showOnlineExamView = true; onlineExamItem = scope.row" :disabled="(new Date(scope.row.start_time).getTime() < Date.now() || new Date(scope.row.end_time).getTime() > Date.now())">进入</el-button>
+          <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="showOnlineExamView = true; onlineExamItem = scope.row" :disabled="!(new Date(scope.row.start_time).getTime() < Date.now() && new Date(scope.row.end_time).getTime() > Date.now())">进入</el-button>
           <el-button type="primary" size="small" @click="handleView(scope.row)" :disabled="scope.row.status === 1">查看</el-button>
         </template>
       </el-table-column>

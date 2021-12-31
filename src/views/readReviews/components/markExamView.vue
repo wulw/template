@@ -29,7 +29,7 @@
                   </template>
                   <template v-else-if="form.type === 1">  
                     <el-col :span="24">
-                        <el-radio-group v-model="form.answer.answer">
+                        <el-radio-group v-model="form.answer.answer" :disabled="markExamItem.status !== 1">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-radio :label="key">{{ `${key}. ${val}` }}</el-radio>
                           </el-form-item>
@@ -38,7 +38,7 @@
                   </template>
                   <template v-else>  
                     <el-col :span="24">
-                        <el-checkbox-group v-model="form.answer.answer">
+                        <el-checkbox-group v-model="form.answer.answer" :disabled="markExamItem.status !== 1">
                           <el-form-item style="margin-left: 96px" v-for="val, key in form.option" :key="key">
                             <el-checkbox :label="key">{{ `${key}. ${val}` }}</el-checkbox>
                           </el-form-item>

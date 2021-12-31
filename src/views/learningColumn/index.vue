@@ -70,8 +70,8 @@
               <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
               <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
               <el-button v-else type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
+              <el-button type="primary" size="small" @click="() => { showComments = true; learningColumnItem = scope.row }">评论管理</el-button>
             </template>
-            <el-button type="primary" size="small" @click="() => { showComments = true; learningColumnItem = scope.row }">评论管理</el-button>
           </template>
         </template>
       </el-table-column>
