@@ -47,11 +47,11 @@
       <el-table-column label="文章标题" prop="title" width="240" align="center" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="资讯类型" prop="type" align="center">
         <template slot-scope="scope">
-          <span>{{ informationTypeList.find(item => item.valueId === scope.row.type).valueDesc }}</span>
+          <span>{{ articleTypeList.find(item => item.valueId === scope.row.type).valueDesc }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布人" prop="user_name" align="center"></el-table-column>
-      <el-table-column label="来源" prop="source" align="center"></el-table-column>
+      <el-table-column label="来源" prop="source" align="center" show-overflow-tooltip></el-table-column>
       <el-table-column label="发布时间" prop="release_time" align="center"></el-table-column>
       <el-table-column label="单位" prop="user_department" align="center" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="审核状态" prop="status" align="center">
@@ -62,15 +62,33 @@
       <el-table-column label="操作" width="240" align="center">
         <template slot-scope="scope">
           <template v-if="auditFlag">
-            <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
+            <el-tooltip class="item" effect="dark" content="查看" placement="top">
+              <el-link icon="iconfont icon-chakanliebiao" :underline="false" @click="handleEdit(scope.row)"></el-link>
+            </el-tooltip>
+            <!-- <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button> -->
           </template>
           <template v-else>
-            <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-tooltip v-if="scope.row.status === 0" class="item" effect="dark" content="编辑" placement="top">
+              <el-link icon="iconfont icon-bianji1" :underline="false" @click="handleEdit(scope.row)"></el-link>
+            </el-tooltip>
+            <!-- <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button> -->
             <template v-else-if="scope.row.status === 1"> 
-              <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
-              <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
-              <el-button v-else type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
-              <el-button type="primary" size="small" @click="() => { showComments = true; learningColumnItem = scope.row }">评论管理</el-button>
+              <el-tooltip class="item" effect="dark" content="查看" placement="top">
+                <el-link icon="iconfont icon-chakanliebiao" :underline="false" @click="handleEdit(scope.row)"></el-link>
+              </el-tooltip>
+              <!-- <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button> -->
+              <el-tooltip v-if="scope.row.is_top === 0" class="item" effect="dark" content="置顶" placement="top">
+                <el-link icon="iconfont icon-quxiaozhiding" style="transform: rotate(180deg)" :underline="false" @click="handleTop(scope.row, 1)"></el-link>
+              </el-tooltip>
+              <el-tooltip v-else class="item" effect="dark" content="取消置顶" placement="top">
+                <el-link icon="iconfont icon-quxiaozhiding" :underline="false" @click="handleTop(scope.row, 2)"></el-link>
+              </el-tooltip>
+              <!-- <el-button v-if="scope.row.is_top === 0" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
+              <el-button v-else type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button> -->
+              <el-tooltip class="item" effect="dark" content="评论管理" placement="top">
+                <el-link icon="iconfont icon-pinglun" :underline="false" @click="() => { showComments = true; learningColumnItem = scope.row }"></el-link>
+              </el-tooltip>
+              <!-- <el-button type="primary" size="small" @click="() => { showComments = true; learningColumnItem = scope.row }">评论管理</el-button> -->
             </template>
           </template>
         </template>
@@ -137,7 +155,7 @@ export default {
       filterForm: {
         name: '',
         type: '',
-        release_time: [],
+        release_time: '',
         status: 0
       },
       queryLoading: false,

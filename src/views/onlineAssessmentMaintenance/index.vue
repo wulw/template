@@ -38,9 +38,18 @@
       </el-table-column>
       <el-table-column label="操作" width="360" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.is_star === 1" type="primary" size="small" @click="showModule = 'questionMaintenance'; onlineExamItem = scope.row">问卷维护</el-button>
-          <el-button v-else type="primary" size="small" @click="showModule = 'scoreViewList'; onlineExamItem = scope.row">成绩查看</el-button>
-          <el-button v-if="scope.row.is_star === 3" type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'answerStatistical'; onlineExamItem = scope.row }">统计</el-button>
+          <el-tooltip v-if="scope.row.is_star === 1" class="item" effect="dark" content="问卷维护" placement="top">
+            <el-link icon="iconfont icon-24gl-enter" :underline="false" @click="showModule = 'questionMaintenance'; onlineExamItem = scope.row"></el-link>
+          </el-tooltip>
+          <el-tooltip v-else class="item" effect="dark" content="成绩查看" placement="top">
+            <el-link icon="iconfont icon-chakanliebiao" :underline="false" @click="showModule = 'scoreViewList'; onlineExamItem = scope.row"></el-link>
+          </el-tooltip>
+          <!-- <el-button v-if="scope.row.is_star === 1" type="primary" size="small" @click="showModule = 'questionMaintenance'; onlineExamItem = scope.row">问卷维护</el-button>
+          <el-button v-else type="primary" size="small" @click="showModule = 'scoreViewList'; onlineExamItem = scope.row">成绩查看</el-button> -->
+          <el-tooltip v-if="scope.row.is_star === 3" class="item" effect="dark" content="统计" placement="top">
+            <el-link icon="iconfont icon-tongji" :underline="false" @click="() => { dialogVisible = true; dialogTag = 'answerStatistical'; onlineExamItem = scope.row }"></el-link>
+          </el-tooltip>
+          <!-- <el-button v-if="scope.row.is_star === 3" type="primary" size="small" @click="() => { dialogVisible = true; dialogTag = 'answerStatistical'; onlineExamItem = scope.row }">统计</el-button> -->
         </template>
       </el-table-column>
     </el-table>

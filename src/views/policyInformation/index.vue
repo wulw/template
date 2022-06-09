@@ -63,16 +63,34 @@
       <el-table-column label="操作" width="360" align="center">
         <template slot-scope="scope">
           <template v-if="auditFlag">
-            <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
+            <el-tooltip class="item" effect="dark" content="查看" placement="top">
+              <el-link icon="iconfont icon-chakanliebiao" :underline="false" @click="handleEdit(scope.row)"></el-link>
+            </el-tooltip>
+            <!-- <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button> -->
           </template>
           <template v-else>
-            <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-tooltip v-if="scope.row.status === 0" class="item" effect="dark" content="编辑" placement="top">
+              <el-link icon="iconfont icon-bianji1" :underline="false" @click="handleEdit(scope.row)"></el-link>
+            </el-tooltip>
+            <!-- <el-button v-if="scope.row.status === 0" type="primary" size="small" @click="handleEdit(scope.row)"></el-button> -->
             <template v-else>
-              <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
-              <el-button v-if="scope.row.is_top === 0 && scope.row.status === 1" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button>
-              <el-button v-else-if="scope.row.is_top === 1 && scope.row.status === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button>
+              <el-tooltip class="item" effect="dark" content="查看" placement="top">
+                <el-link icon="iconfont icon-chakanliebiao" :underline="false" @click="handleEdit(scope.row)"></el-link>
+              </el-tooltip>
+              <!-- <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button> -->
+              <el-tooltip v-if="scope.row.is_top === 0 && scope.row.status === 1" class="item" effect="dark" content="置顶" placement="top">
+                <el-link icon="iconfont icon-quxiaozhiding" style="transform: rotate(180deg)" :underline="false" @click="handleTop(scope.row, 1)"></el-link>
+              </el-tooltip>
+              <el-tooltip v-else-if="scope.row.is_top === 1 && scope.row.status === 1" class="item" effect="dark" content="取消置顶" placement="top">
+                <el-link icon="iconfont icon-quxiaozhiding" :underline="false" @click="handleTop(scope.row, 2)"></el-link>
+              </el-tooltip>
+              <!-- <el-button v-if="scope.row.is_top === 0 && scope.row.status === 1" type="primary" size="small" @click="handleTop(scope.row, 1)">置顶</el-button> -->
+              <!-- <el-button v-else-if="scope.row.is_top === 1 && scope.row.status === 1" type="primary" size="small" @click="handleTop(scope.row, 2)">取消置顶</el-button> -->
             </template>
-            <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="() => { showComments = true; policyInfoItem = scope.row }">评论管理</el-button>
+              <el-tooltip v-if="scope.row.status === 1" class="item" effect="dark" content="评论管理" placement="top">
+                <el-link icon="iconfont icon-pinglun" :underline="false" @click="() => { showComments = true; policyInfoItem = scope.row }"></el-link>
+              </el-tooltip>
+            <!-- <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="() => { showComments = true; policyInfoItem = scope.row }">评论管理</el-button> -->
           </template>
         </template>
       </el-table-column>

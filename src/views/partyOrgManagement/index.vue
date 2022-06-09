@@ -111,7 +111,10 @@
         <el-table-column label="手机号" prop="phone" align="center"></el-table-column>
         <el-table-column label="操作" width="160" align="center">
           <template slot-scope="scope">
-            <el-button type="primary" v-if="scope.row" @click="edit(scope.row)" size="small">编辑</el-button>
+            <el-tooltip class="item" effect="dark" content="编辑" placement="top">
+              <el-link icon="iconfont icon-bianji1" :underline="false" @click="edit(scope.row)"></el-link>
+            </el-tooltip>
+            <!-- <el-button type="primary" v-if="scope.row" @click="edit(scope.row)" size="small">编辑</el-button> -->
           </template>
         </el-table-column>  
       </el-table>

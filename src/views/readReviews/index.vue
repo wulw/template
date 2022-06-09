@@ -23,7 +23,10 @@
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="() => { showMarkExamList = true; readReviewItem = scope.row }">查看</el-button>
+          <el-tooltip class="item" effect="dark" content="查看" placement="top">
+            <el-link icon="iconfont icon-chakanliebiao" :underline="false" @click="() => { showMarkExamList = true; readReviewItem = scope.row }"></el-link>
+          </el-tooltip>
+          <!-- <el-button type="primary" size="small" @click="() => { showMarkExamList = true; readReviewItem = scope.row }">查看</el-button> -->
         </template>
       </el-table-column>
     </el-table>

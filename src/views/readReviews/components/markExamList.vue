@@ -26,8 +26,14 @@
       <el-table-column label="总分" prop="total_score" align="center"></el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="() => { showMarkExamView = true; markExamItem = scope.row }">阅卷</el-button>
-          <el-button v-else type="primary" size="small" @click="() => { showMarkExamView = true; markExamItem = scope.row }">查看</el-button>
+          <el-tooltip v-if="scope.row.status === 1" class="item" effect="dark" content="阅卷" placement="top">
+            <el-link icon="iconfont icon-24gl-enter" :underline="false" @click="() => { showMarkExamView = true; markExamItem = scope.row }"></el-link>
+          </el-tooltip>
+          <el-tooltip v-else class="item" effect="dark" content="查看" placement="top">
+            <el-link icon="iconfont icon-chakanliebiao" :underline="false" @click="() => { showMarkExamView = true; markExamItem = scope.row }"></el-link>
+          </el-tooltip>
+          <!-- <el-button v-if="scope.row.status === 1" type="primary" size="small" @click="() => { showMarkExamView = true; markExamItem = scope.row }">阅卷</el-button>
+          <el-button v-else type="primary" size="small" @click="() => { showMarkExamView = true; markExamItem = scope.row }">查看</el-button> -->
         </template>
       </el-table-column>
     </el-table>

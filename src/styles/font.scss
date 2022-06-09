@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2844963 */
-  src: url('//at.alicdn.com/t/font_2844963_1maudyuatjh.woff2?t=1634609441426') format('woff2'),
-       url('//at.alicdn.com/t/font_2844963_1maudyuatjh.woff?t=1634609441426') format('woff'),
-       url('//at.alicdn.com/t/font_2844963_1maudyuatjh.ttf?t=1634609441426') format('truetype');
+  src: url('//at.alicdn.com/t/font_2844963_kcyxq9pl9e.woff2?t=1641455711322') format('woff2'),
+       url('//at.alicdn.com/t/font_2844963_kcyxq9pl9e.woff?t=1641455711322') format('woff'),
+       url('//at.alicdn.com/t/font_2844963_kcyxq9pl9e.ttf?t=1641455711322') format('truetype');
 }
 
 .iconfont {
@@ -19,6 +19,23 @@
   -moz-osx-font-smoothing: grayscale;
   font-size: 20px;
 }
+
+.icon-pinglun:before {
+  content: "\e891";
+}
+
+.icon-quxiaozhiding:before {
+  content: "\e66e";
+}
+
+.icon-tongji:before {
+  content: "\e660";
+}
+
+.icon-24gl-enter:before {
+  content: "\eb6c";
+}
+
 .icon-bianji1:before {
   content: "\e600";
 }
@@ -30,8 +47,3 @@
 .icon-shanchu:before {
   content: "\e74b";
 }
-
-.icon-shenhe:before {
-  content: "\e81e";
-}
-

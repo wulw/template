@@ -15,7 +15,10 @@
       <el-table-column label="时间" prop="create_at" align="center"></el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
-          <el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button>
+          <el-tooltip class="item" effect="dark" content="删除" placement="top">
+            <el-link icon="iconfont icon-shanchu" :underline="false" @click="handleDel(scope.row)"></el-link>
+          </el-tooltip>
+          <!-- <el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>  
